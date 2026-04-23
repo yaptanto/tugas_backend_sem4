@@ -59,6 +59,18 @@
     background-attachment: fixed;
 }
 
+.game-bg-valorant {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 50vh;
+    background-image: url('/asset/logo_game/valorant-wpp.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
 @keyframes fadeInUp {
     0% {
         transform: translateY(30px);

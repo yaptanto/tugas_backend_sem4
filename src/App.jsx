@@ -18,6 +18,7 @@ import Register from './pages/Register';
 import Reset from './pages/Reset';
 import Summary from './pages/Summary';
 import Voucher from './pages/Voucher';
+import Valorant from './pages/Valorant';
 import './styles/Animations.css'
 import './App.css';
 import { PointProvider } from "./components/PointContext";
@@ -47,6 +48,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/game/mlbb" element={<Game />} />
+              <Route path="/game/valorant" element={<Valorant />} />
               <Route path="/pembayaran" element={<Pembayaran />} />
               <Route path="/history" element={<History />} />
               <Route path="/promo" element={<Promo />} />

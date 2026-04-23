@@ -21,7 +21,7 @@ const Home = () => {
               <img src="/asset/logo_game/roblox.png" alt="" width="180" className="home-gameicon" />
               <div className="home-gametitle">Roblox Gift Card </div>
             </Link>
-            <Link to="#" className="home-gamecard">
+            <Link to="/game/valorant" className="home-gamecard">
               <img src="/asset/logo_game/valorant.png" alt="" width="180" className="home-gameicon" />
               <div className="home-gametitle">valorant</div>
             </Link>
