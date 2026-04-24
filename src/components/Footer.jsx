@@ -17,7 +17,7 @@ const Footer = () => {
         <div className="footer-container">
           <div className="footer-title">Butuh Bantuan?</div>
           <div className="footer-list">
-            <button type="button" className="btn btn-secondary">Hubungi Kami ☎️</button>
+            <a href="/contact"><button type="button" className="btn btn-secondary">Hubungi Kami ☎️</button></a>
           </div>
         </div>
         <div className="footer-container">
