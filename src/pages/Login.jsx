@@ -60,16 +60,16 @@ const Login = () => {
         return;
       }
 
-      // Simpan data user yang login ke localStorage
+      // Simpan data user yang login ke sessionStorage
       const userData = result.data;
 
-      // Simpan ke localStorage
-      localStorage.setItem('authToken', 'dummy-token-' + Date.now());
-      localStorage.setItem('userData', JSON.stringify(userData));
-      localStorage.setItem('currentUser', JSON.stringify(userData));
+      // Simpan ke sessionStorage
+      sessionStorage.setItem('authToken', 'dummy-token-' + Date.now());
+      sessionStorage.setItem('userData', JSON.stringify(userData));
+      sessionStorage.setItem('currentUser', JSON.stringify(userData));
 
       // Tambahkan timestamp login
-      localStorage.setItem('loginTime', Date.now().toString());
+      sessionStorage.setItem('loginTime', Date.now().toString());
 
       // Reset form
       setFormData({

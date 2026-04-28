@@ -27,13 +27,13 @@ const Profile = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Load user data dari localStorage saat komponen mount
+  // Load user data dari sessionStorage saat komponen mount
   useEffect(() => {
     const loadUserData = () => {
       try {
-        const authToken = localStorage.getItem('authToken');
-        const storedUser = localStorage.getItem('userData');
-        const currentUser = localStorage.getItem('currentUser');
+        const authToken = sessionStorage.getItem('authToken');
+        const storedUser = sessionStorage.getItem('userData');
+        const currentUser = sessionStorage.getItem('currentUser');
 
         // Cek apakah user benar-benar login (ada authToken)
         if (!authToken) {
@@ -81,7 +81,7 @@ const Profile = () => {
       }
     };
 
-    window.addEventListener('storage', handleStorageChange);
+    // window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
@@ -259,9 +259,9 @@ const Profile = () => {
       const updatedUser = { ...userData, ...updatedData };
       setUserData(updatedUser);
 
-      // Update localStorage
-      localStorage.setItem('userData', JSON.stringify(updatedUser));
-      localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+      // Update sessionStorage
+      sessionStorage.setItem('userData', JSON.stringify(updatedUser));
+      sessionStorage.setItem('currentUser', JSON.stringify(updatedUser));
 
       // Update form data
       setFormData(prev => ({
@@ -332,8 +332,8 @@ const Profile = () => {
       const updatedUser = { ...userData, avatar: avatarUrl };
 
       setUserData(updatedUser);
-      localStorage.setItem('userData', JSON.stringify(updatedUser));
-      localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+      sessionStorage.setItem('userData', JSON.stringify(updatedUser));
+      sessionStorage.setItem('currentUser', JSON.stringify(updatedUser));
 
       setSuccessMessage('Foto profil berhasil diupdate!');
       setTimeout(() => setSuccessMessage(''), 2000);
@@ -366,10 +366,10 @@ const Profile = () => {
         }
 
         // Hapus SEMUA session data
-        localStorage.removeItem('userData');
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('currentUser');
-        localStorage.removeItem('loginTime');
+        sessionStorage.removeItem('userData');
+        sessionStorage.removeItem('authToken');
+        sessionStorage.removeItem('currentUser');
+        sessionStorage.removeItem('loginTime');
 
         // Reset state
         setUserData(null);
@@ -399,11 +399,11 @@ const Profile = () => {
 
   // Handle logout - PERBAIKI INI
   const handleLogout = () => {
-    // Hapus SEMUA data user dari localStorage
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('currentUser');
-    localStorage.removeItem('userData');
-    localStorage.removeItem('loginTime');
+    // Hapus SEMUA data user dari sessionStorage
+    sessionStorage.removeItem('authToken');
+    sessionStorage.removeItem('currentUser');
+    sessionStorage.removeItem('userData');
+    sessionStorage.removeItem('loginTime');
     
     // Reset state userData ke null
     setUserData(null);
