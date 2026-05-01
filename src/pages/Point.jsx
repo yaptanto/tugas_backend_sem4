@@ -10,6 +10,7 @@ const Point = () => {
   const [leaderboard, setLeaderboard] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [tierConfig, setTierConfig] = useState(null);
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
@@ -20,6 +21,19 @@ const Point = () => {
           setLeaderboard(result.data);
         } else {
           setError(result.message || 'Gagal memuat leaderboard');
+        }
+
+        const userData = sessionStorage.getItem('userData');
+        if (userData) {
+          try {
+            const { id: userId } = JSON.parse(userData);
+            if (userId) {
+              fetch(`/api/points/config/${userId}`)
+                .then(r => r.json())
+                .then(result => { if (result.success) setTierConfig(result.data); })
+                .catch(() => {});
+            }
+          } catch {}
         }
       } catch (err) {
         setError('Terjadi kesalahan. Pastikan backend berjalan.');
@@ -32,6 +46,8 @@ const Point = () => {
   }, []);
 
   const renderLeaderboardItem = (entry) => {
+    const rowClass = entry.rank === 1 ? 'rank-top-1' : entry.rank === 2 ? 'rank-top-2' : entry.rank === 3 ? 'rank-top-3' : '';
+
     const trophyIcon = entry.rank === 1 ? (
       <i className="bi bi-trophy-fill text-warning me-2"></i>
     ) : entry.rank === 2 ? (
@@ -43,13 +59,13 @@ const Point = () => {
     const rankClass = entry.rank <= 3 ? `rank-badge rank-${entry.rank}` : 'rank-badge';
 
     return (
-      <li key={entry.rank} className="list-group-item d-flex justify-content-between align-items-center">
+      <li key={entry.rank} className={`list-group-item d-flex justify-content-between align-items-center ${rowClass}`}>
         <div>
           <span className={rankClass}>{entry.rank}</span>
           {trophyIcon}
           <strong>{entry.username}</strong>
         </div>
-        <span className="text-muted fw-500">
+        <span className="text-muted fw-500 pe-2">
           {entry.totalSpent.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 })}
         </span>
       </li>
@@ -68,6 +84,14 @@ const Point = () => {
                 <div className="points-display">
                   {points.toLocaleString('id-ID')}
                 </div>
+                {tierConfig && (
+                  <div className="tier-badge-row">
+                    <span className={`tier-badge tier-${tierConfig.tierName.toLowerCase()}`}>
+                      {tierConfig.tierName.toUpperCase()}
+                    </span>
+                    <span className="tier-rate">Reward rate: {(tierConfig.rewardRate * 100).toFixed(1)}%</span>
+                  </div>
+                )}
                 <p>
                   Gunakan poin Anda untuk mendapatkan diskon pada saat topup.
                 </p>
