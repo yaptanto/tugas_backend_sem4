@@ -159,6 +159,29 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
+// Reset password
+app.post('/api/reset-password', async (req, res) => {
+  try {
+    const { emailOrUsername, newPassword, confirmPassword } = req.body;
+
+    if (!emailOrUsername || !newPassword || !confirmPassword) {
+      return userService.errorResponse(res, "Semua field wajib diisi");
+    }
+    if (newPassword !== confirmPassword) {
+      return userService.errorResponse(res, "Konfirmasi password tidak cocok");
+    }
+    if (newPassword.length < 6) {
+      return userService.errorResponse(res, "Password minimal 6 karakter");
+    }
+
+    await userService.resetPassword(emailOrUsername, newPassword);
+
+    res.json({ success: true, message: "Password berhasil direset" });
+  } catch (err) {
+    userService.errorResponse(res, err.message);
+  }
+});
+
 
 // ==========================================
 // ENDPOINT TRANSAKSI & VOUCHER

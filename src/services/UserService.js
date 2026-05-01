@@ -100,6 +100,26 @@ class UserService extends BaseService {
     return user.points;
   }
 
+  async resetPassword(emailOrUsername, newPassword) {
+    if (!emailOrUsername || !newPassword) {
+      throw new Error("Email/Username dan password baru wajib diisi");
+    }
+    if (newPassword.length < 6) {
+      throw new Error("Password minimal 6 karakter");
+    }
+
+    const user = await this.prisma.users.findFirst({
+      where: { OR: [{ email: emailOrUsername }, { username: emailOrUsername }] }
+    });
+
+    if (!user) throw new Error("Email/Username tidak ditemukan");
+
+    return await this.prisma.users.update({
+      where: { id: user.id },
+      data: { password: newPassword }
+    });
+  }
+
   async deleteUser(userId) {
     return await this.prisma.users.delete({ where: { id: userId } });
   }
