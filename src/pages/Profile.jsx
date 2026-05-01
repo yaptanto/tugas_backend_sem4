@@ -690,12 +690,10 @@ const Profile = () => {
               )}
 
               <div>
-                <a className="security-link" href="#">Security Settings</a>
-                <button 
-                  className="logout-btn" 
+                <button
+                  className="logout-btn"
                   onClick={handleLogout}
                   style={{
-                    marginLeft: '15px',
                     background: 'transparent',
                     border: '1px solid #ff5555',
                     color: '#ff5555',

@@ -9,7 +9,6 @@ const Footer = () => {
         <div className="footer-container">
           <div className="footer-title">Untuk Penerbit</div>
           <ul className="footer-list">
-            <li><a href="#">Daftarkan Judul Anda di RAST-7</a></li>
             <li><Link to="/pelajari-lebih">Pelajari lebih lanjut tentang kami</Link></li>
             <li><Link to="/about">About us</Link></li>
           </ul>
