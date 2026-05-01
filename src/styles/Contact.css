@@ -162,4 +162,14 @@
     color: white;
     border: none;
     border-radius: 8px;
-    padding:
+    padding: 10px 32px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: opacity 0.2s, transform 0.2s;
+}
+
+.alert-btn:hover {
+    opacity: 0.85;
+    transform: translateY(-1px);
+}
