@@ -1,7 +1,35 @@
-[
-  {"nama": "Anthony Louis", "nim": 241110249},
-  {"nama": "Suryanata Yaptanto", "nim": 241111143},
-  {"nama": "Vincent Oswaldo" Tio, "nim": 241110159},
-  {"nama": "Trevan Edgard", "nim": 241110265},
-  {"nama": "Richie Hujaya", "nim": 241110258},
-]
+NAMA TIM
+--------
+Bintang Abadi Jaya Perkasa
+
+ANGGOTA TIM
+-----------
+1. NIM: 241110249 | Anthony Louis
+2. NIM: 241111143 | Suryanata Yaptanto
+3. NIM: 241110159 | Vincent Oswaldo Tio
+4. NIM: 241110265 | Trevan Edgard
+5. NIM: 241110258 | Richie Hujaya
+
+TEKNOLOGI YANG DIGUNAKAN
+------------------------
+- Runtime      : Node.js
+- Framework    : Express.js
+- Frontend     : React.js (Vite)
+- ORM          : Prisma
+- Database     : MongoDB
+- Styling      : CSS
+- File Upload  : Multer
+- Tool         : Git, GitHub
+
+LINK TEMPLATE
+-------------
+- Tidak menggunakan template (desain dibuat sendiri)
+
+INOVASI DAN KREATIVITAS
+------------------------
+- Implementasi OOP dengan class dan inheritance
+- Sistem poin reward otomatis setiap transaksi berhasil
+- Sistem voucher diskon yang dapat ditukar dengan poin
+- Upload foto profil dengan penyimpanan berbasis memory (tanpa disk storage)
+- Tampilan responsif dengan animasi interaktif pada halaman utama
+- Riwayat transaksi lengkap per user dengan detail produk
