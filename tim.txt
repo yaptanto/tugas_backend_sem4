@@ -1,3 +1,5 @@
+!!! kita menggunakan Mongo Atlas(cloud storage), jadi tidak ada file sql lagi !!!
+
 NAMA TIM
 --------
 Bintang Abadi Jaya Perkasa
