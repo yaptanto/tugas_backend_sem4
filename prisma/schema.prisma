@@ -37,6 +37,7 @@ model games {
   name        String   // "Mobile Legends: Bang Bang"
   slug        String   @unique // "mlbb", "roblox"
   logoUrl     String   // "/asset/logo_game/mlbb.png"
+  itemIconUrl String?  // "/asset/logo_game/diamond.png" — icon shown on item cards
 
   bgUrl              String?   // "/asset/logo_game/coc_bg.png"
   bgPosition         String?   // "50% calc(50% - 300px)"

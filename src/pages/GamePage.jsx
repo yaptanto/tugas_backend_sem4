@@ -4,14 +4,14 @@ import "../styles/Game.css";
 import Notification from "../components/Notification";
 import { mapGameItems, mapPaymentMethods } from "../utils/dataMapping";
 
-const DiamondCard = ({ qty, price, disc, discPrice, index, activeIndex, setActiveDiamondIndex, itemName }) => {
+const DiamondCard = ({ qty, price, disc, discPrice, index, activeIndex, setActiveDiamondIndex, itemName, iconSrc }) => {
   return (
     <>
       <div className="col p-2">
           <div className={`game-card card ${index === activeIndex ? 'active' : ''}`} onClick={() => setActiveDiamondIndex(index === activeIndex ? null : index)}>
             <p>{qty} {itemName}</p>
             <div className="game-img-container">
-              <img src="/asset/logo_game/gems.png" alt="" />
+              <img src={iconSrc || "/asset/logo_game/gems.png"} alt="" />
             </div>
             <div className="game-card-bottom">
               <p>Dari</p>
@@ -244,6 +244,7 @@ const GamePage = () => {
                 activeIndex={activeDiamondIndex}
                 setActiveDiamondIndex={setActiveDiamondIndex}
                 itemName={itemDisplayName}
+                iconSrc={game?.itemIconUrl}
               />
             ))}
           </div>
