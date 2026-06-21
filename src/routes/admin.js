@@ -1,16 +1,31 @@
 import express from 'express';
+import multer from 'multer';
 import { authenticate, authorizeAdmin } from '../middleware/auth.js';
 
 const router = express.Router();
+
+// Multer setup for game image uploads
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB per file
+  fileFilter: (req, file, cb) => {
+    const allowed = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'];
+    if (allowed.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Format file tidak didukung. Gunakan PNG, JPG, GIF, atau WebP.'));
+    }
+  }
+});
 
 // All admin routes require authentication + admin role
 router.use(authenticate, authorizeAdmin);
 
 /**
  * @openapi
- * /api/users:
+ * /api/admin/users:
  *   get:
- *     summary: Get all users (admin only)
+ *     summary: List all users (admin only)
  *     tags: [Admin]
  *     security:
  *       - bearerAuth: []
@@ -22,12 +37,518 @@ router.use(authenticate, authorizeAdmin);
  *       403:
  *         description: Forbidden - admin access required
  */
-router.get('/users', async (req, res) => {
+router.get('/admin/users', async (req, res) => {
   try {
     const users = await req.userService.getAllUsers();
     res.status(200).json({ success: true, data: users });
   } catch (err) {
     req.userService.handleError(res, err, "Gagal mengambil data users");
+  }
+});
+
+// ==============================
+// GAMES CRUD
+// ==============================
+
+/**
+ * @openapi
+ * /api/admin/games:
+ *   get:
+ *     summary: List all games with item count (admin)
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Array of games
+ */
+router.get('/admin/games', async (req, res) => {
+  try {
+    const games = await req.prisma.games.findMany({
+      orderBy: { createdAt: 'desc' }
+    });
+    const data = games.map(g => ({
+      id: g.id,
+      name: g.name,
+      slug: g.slug,
+      hasLogo: !!g.logo,
+      hasBg: !!g.bg,
+      hasIcon: !!g.itemIcon,
+      logoUrl: g.logo ? `/api/game-media/${g.id}/logo` : null,
+      bgUrl: g.bg ? `/api/game-media/${g.id}/bg` : null,
+      bgPosition: g.bgPosition,
+      hasZone: g.hasZone,
+      itemCount: g.items?.length || 0,
+      createdAt: g.createdAt
+    }));
+    res.json({ success: true, data });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+/**
+ * @openapi
+ * /api/admin/games/{id}:
+ *   get:
+ *     summary: Get single game with full details (admin)
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Full game data
+ *       404:
+ *         description: Game not found
+ */
+router.get('/admin/games/:id', async (req, res) => {
+  try {
+    const game = await req.prisma.games.findUnique({
+      where: { id: req.params.id }
+    });
+    if (!game) return res.status(404).json({ success: false, message: "Game tidak ditemukan" });
+
+    const data = {
+      ...game,
+      logo: undefined,
+      bg: undefined,
+      itemIcon: undefined,
+      hasLogo: !!game.logo,
+      hasBg: !!game.bg,
+      hasIcon: !!game.itemIcon,
+      logoUrl: game.logo ? `/api/game-media/${game.id}/logo` : null,
+      bgUrl: game.bg ? `/api/game-media/${game.id}/bg` : null,
+      itemIconUrl: game.itemIcon ? `/api/game-media/${game.id}/icon` : null
+    };
+    delete data.logo;
+    delete data.bg;
+    delete data.itemIcon;
+
+    res.json({ success: true, data });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+/**
+ * @openapi
+ * /api/admin/games:
+ *   post:
+ *     summary: Create a new game with images (admin)
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required: [name, slug]
+ *             properties:
+ *               name: { type: string }
+ *               slug: { type: string }
+ *               logo: { type: string, format: binary }
+ *               bg: { type: string, format: binary }
+ *               itemIcon: { type: string, format: binary }
+ *               hasZone: { type: boolean }
+ *               bgPosition: { type: string }
+ *     responses:
+ *       201:
+ *         description: Game created
+ *       400:
+ *         description: Validation error
+ */
+router.post('/admin/games', upload.fields([
+  { name: 'logo', maxCount: 1 },
+  { name: 'bg', maxCount: 1 },
+  { name: 'itemIcon', maxCount: 1 }
+]), async (req, res) => {
+  try {
+    const {
+      name, slug,
+      hasZone, bgPosition,
+      userIdLabel, userIdPlaceholder,
+      zoneIdLabel, zoneIdPlaceholder, zoneIdHint, zoneIdMaxLength
+    } = req.body;
+
+    if (!name || !slug) {
+      return res.status(400).json({ success: false, message: "Nama dan slug game wajib diisi" });
+    }
+
+    const existing = await req.prisma.games.findUnique({ where: { slug } });
+    if (existing) {
+      return res.status(400).json({ success: false, message: "Slug sudah digunakan" });
+    }
+
+    const game = await req.prisma.games.create({
+      data: {
+        name,
+        slug,
+        logo: req.files?.logo?.[0]?.buffer || undefined,
+        itemIcon: req.files?.itemIcon?.[0]?.buffer || undefined,
+        bg: req.files?.bg?.[0]?.buffer || undefined,
+        bgPosition: bgPosition || null,
+        hasZone: hasZone !== 'false',
+        userIdLabel: userIdLabel || "USER ID",
+        userIdPlaceholder: userIdPlaceholder || "Masukkan User ID",
+        zoneIdLabel: zoneIdLabel || "ZONE ID",
+        zoneIdPlaceholder: zoneIdPlaceholder || "Zone ID",
+        zoneIdHint: zoneIdHint || "4 DIGIT",
+        zoneIdMaxLength: zoneIdMaxLength ? parseInt(zoneIdMaxLength) : 4,
+        items: { set: [] }
+      }
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Game berhasil ditambahkan",
+      data: { id: game.id, name: game.name, slug: game.slug }
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+/**
+ * @openapi
+ * /api/admin/games/{id}:
+ *   put:
+ *     summary: Update a game and its images (admin)
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name: { type: string }
+ *               slug: { type: string }
+ *               logo: { type: string, format: binary }
+ *               bg: { type: string, format: binary }
+ *               itemIcon: { type: string, format: binary }
+ *               hasZone: { type: boolean }
+ *               bgPosition: { type: string }
+ *     responses:
+ *       200:
+ *         description: Game updated
+ *       404:
+ *         description: Game not found
+ */
+router.put('/admin/games/:id', upload.fields([
+  { name: 'logo', maxCount: 1 },
+  { name: 'bg', maxCount: 1 },
+  { name: 'itemIcon', maxCount: 1 }
+]), async (req, res) => {
+  try {
+    const existing = await req.prisma.games.findUnique({ where: { id: req.params.id } });
+    if (!existing) return res.status(404).json({ success: false, message: "Game tidak ditemukan" });
+
+    const updateData = {};
+    const textFields = [
+      'name', 'slug', 'bgPosition',
+      'userIdLabel', 'userIdPlaceholder',
+      'zoneIdLabel', 'zoneIdPlaceholder', 'zoneIdHint'
+    ];
+
+    for (const field of textFields) {
+      if (req.body[field] !== undefined) updateData[field] = req.body[field];
+    }
+    if (req.body.hasZone !== undefined) updateData.hasZone = req.body.hasZone !== 'false';
+    if (req.body.zoneIdMaxLength !== undefined) updateData.zoneIdMaxLength = parseInt(req.body.zoneIdMaxLength);
+
+    // Handle image uploads — only update if a new file was sent
+    if (req.files?.logo?.[0]?.buffer) updateData.logo = req.files.logo[0].buffer;
+    if (req.files?.bg?.[0]?.buffer) updateData.bg = req.files.bg[0].buffer;
+    if (req.files?.itemIcon?.[0]?.buffer) updateData.itemIcon = req.files.itemIcon[0].buffer;
+
+    // Handle image removal flags
+    if (req.body.removeLogo === 'true') updateData.logo = null;
+    if (req.body.removeBg === 'true') updateData.bg = null;
+    if (req.body.removeIcon === 'true') updateData.itemIcon = null;
+
+    if (updateData.slug) {
+      const slugConflict = await req.prisma.games.findFirst({
+        where: { slug: updateData.slug, id: { not: req.params.id } }
+      });
+      if (slugConflict) return res.status(400).json({ success: false, message: "Slug sudah digunakan" });
+    }
+
+    const game = await req.prisma.games.update({
+      where: { id: req.params.id },
+      data: updateData
+    });
+
+    res.json({ success: true, message: "Game berhasil diupdate", data: { id: game.id, name: game.name } });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+/**
+ * @openapi
+ * /api/admin/games/{id}:
+ *   delete:
+ *     summary: Delete a game (admin)
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Game deleted
+ *       404:
+ *         description: Game not found
+ */
+router.delete('/admin/games/:id', async (req, res) => {
+  try {
+    await req.prisma.games.delete({ where: { id: req.params.id } });
+    res.json({ success: true, message: "Game berhasil dihapus" });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// ==============================
+// GAME ITEMS CRUD (embedded)
+// ============================== (unchanged — items stay as JSON)
+
+/**
+ * @openapi
+ * /api/admin/games/{id}/items:
+ *   get:
+ *     summary: List items for a game (admin)
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Game items array
+ *       404:
+ *         description: Game not found
+ */
+router.get('/admin/games/:id/items', async (req, res) => {
+  try {
+    const game = await req.prisma.games.findUnique({
+      where: { id: req.params.id },
+      select: { items: true, name: true }
+    });
+    if (!game) return res.status(404).json({ success: false, message: "Game tidak ditemukan" });
+    res.json({ success: true, data: { gameName: game.name, items: game.items || [] } });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+/**
+ * @openapi
+ * /api/admin/games/{id}/items:
+ *   post:
+ *     summary: Add an item to a game (admin)
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [itemName, qty, originalPrice]
+ *             properties:
+ *               itemName: { type: string }
+ *               qty: { type: integer }
+ *               originalPrice: { type: number }
+ *               discountPercent: { type: number }
+ *     responses:
+ *       201:
+ *         description: Item added
+ *       400:
+ *         description: Validation error
+ */
+router.post('/admin/games/:id/items', async (req, res) => {
+  try {
+    const { qty, itemName, originalPrice, discountPercent, finalPrice } = req.body;
+
+    if (!itemName || qty === undefined || originalPrice === undefined) {
+      return res.status(400).json({ success: false, message: "Nama item, qty, dan harga wajib diisi" });
+    }
+
+    const game = await req.prisma.games.findUnique({
+      where: { id: req.params.id },
+      select: { items: true }
+    });
+    if (!game) return res.status(404).json({ success: false, message: "Game tidak ditemukan" });
+
+    if (game.items?.some(i => i.itemName === itemName)) {
+      return res.status(400).json({ success: false, message: "Item dengan nama tersebut sudah ada" });
+    }
+
+    const newItem = {
+      qty: parseInt(qty),
+      itemName,
+      originalPrice: parseFloat(originalPrice),
+      discountPercent: parseFloat(discountPercent || 0),
+      finalPrice: finalPrice ?? Math.round(parseFloat(originalPrice) * (1 - (parseFloat(discountPercent || 0) / 100)))
+    };
+
+    await req.prisma.games.update({
+      where: { id: req.params.id },
+      data: { items: { push: newItem } }
+    });
+
+    res.status(201).json({ success: true, message: "Item berhasil ditambahkan", data: newItem });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+/**
+ * @openapi
+ * /api/admin/games/{id}/items/{itemName}:
+ *   put:
+ *     summary: Update an item (admin)
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *       - in: path
+ *         name: itemName
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               itemName: { type: string }
+ *               qty: { type: integer }
+ *               originalPrice: { type: number }
+ *               discountPercent: { type: number }
+ *     responses:
+ *       200:
+ *         description: Item updated
+ *       404:
+ *         description: Item not found
+ */
+router.put('/admin/games/:id/items/:itemName', async (req, res) => {
+  try {
+    const game = await req.prisma.games.findUnique({
+      where: { id: req.params.id },
+      select: { items: true }
+    });
+    if (!game) return res.status(404).json({ success: false, message: "Game tidak ditemukan" });
+
+    const oldName = decodeURIComponent(req.params.itemName);
+    const items = [...(game.items || [])];
+    const idx = items.findIndex(i => i.itemName === oldName);
+    if (idx === -1) return res.status(404).json({ success: false, message: "Item tidak ditemukan" });
+
+    const { qty, itemName, originalPrice, discountPercent, finalPrice } = req.body;
+    const existing = items[idx];
+
+    const updatedItem = {
+      qty: qty !== undefined ? parseInt(qty) : existing.qty,
+      itemName: itemName ?? existing.itemName,
+      originalPrice: originalPrice !== undefined ? parseFloat(originalPrice) : existing.originalPrice,
+      discountPercent: discountPercent !== undefined ? parseFloat(discountPercent) : existing.discountPercent,
+      finalPrice: finalPrice ?? Math.round(
+        (originalPrice !== undefined ? parseFloat(originalPrice) : existing.originalPrice) *
+        (1 - ((discountPercent !== undefined ? parseFloat(discountPercent) : existing.discountPercent) / 100))
+      )
+    };
+
+    items[idx] = updatedItem;
+
+    await req.prisma.games.update({
+      where: { id: req.params.id },
+      data: { items: { set: items } }
+    });
+
+    res.json({ success: true, message: "Item berhasil diupdate", data: updatedItem });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+/**
+ * @openapi
+ * /api/admin/games/{id}/items/{itemName}:
+ *   delete:
+ *     summary: Delete an item from a game (admin)
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *       - in: path
+ *         name: itemName
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Item deleted
+ *       404:
+ *         description: Item not found
+ */
+router.delete('/admin/games/:id/items/:itemName', async (req, res) => {
+  try {
+    const game = await req.prisma.games.findUnique({
+      where: { id: req.params.id },
+      select: { items: true }
+    });
+    if (!game) return res.status(404).json({ success: false, message: "Game tidak ditemukan" });
+
+    const itemName = decodeURIComponent(req.params.itemName);
+    const filtered = (game.items || []).filter(i => i.itemName !== itemName);
+
+    if (filtered.length === game.items?.length) {
+      return res.status(404).json({ success: false, message: "Item tidak ditemukan" });
+    }
+
+    await req.prisma.games.update({
+      where: { id: req.params.id },
+      data: { items: { set: filtered } }
+    });
+
+    res.json({ success: true, message: "Item berhasil dihapus" });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
 });
 

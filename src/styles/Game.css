@@ -214,6 +214,24 @@
     font-size: 1.2rem;
 }
 
+.game-icon-placeholder {
+  width: 100%;
+  aspect-ratio: 1;
+  background: linear-gradient(135deg, #2a2a4a 0%, #1a1a3e 100%);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.game-icon-letter {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #4a4a7a;
+  text-transform: uppercase;
+  font-family: 'Audiowide', sans-serif;
+}
+
 .game-nominal-section .game-list-diamond .game-card .game-img-container {
     width: 50%;
 }
