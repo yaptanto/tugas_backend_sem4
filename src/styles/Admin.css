@@ -471,6 +471,70 @@
   color: var(--admin-text-muted);
 }
 
+.admin-field-hint {
+  font-size: 0.78rem;
+  color: var(--admin-text-muted);
+  margin-top: -12px;
+  margin-bottom: 18px;
+  line-height: 1.4;
+}
+
+.admin-field-hint code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  background: var(--admin-surface-2);
+  padding: 1px 6px;
+  border-radius: 3px;
+  color: var(--admin-primary-hover);
+}
+
+/* ---- File Input ---- */
+.admin-file-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.admin-file-preview {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid var(--admin-border);
+  background: var(--admin-surface-2);
+}
+
+.admin-file-inputs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.admin-file-inputs input[type="file"] {
+  color: var(--admin-text-secondary);
+  font-size: 0.8rem;
+  font-family: 'Inter', sans-serif;
+}
+
+.admin-file-inputs input[type="file"]::file-selector-button {
+  padding: 6px 14px;
+  border: 1px solid var(--admin-border);
+  border-radius: 6px;
+  background: var(--admin-surface-2);
+  color: var(--admin-text);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  cursor: pointer;
+  margin-right: 8px;
+  transition: all 0.15s;
+}
+
+.admin-file-inputs input[type="file"]::file-selector-button:hover {
+  background: var(--admin-border);
+}
+
 /* ---- Toast ---- */
 .admin-toast {
   position: fixed;

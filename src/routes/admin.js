@@ -1,7 +1,22 @@
 import express from 'express';
+import multer from 'multer';
 import { authenticate, authorizeAdmin } from '../middleware/auth.js';
 
 const router = express.Router();
+
+// Multer setup for game image uploads
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB per file
+  fileFilter: (req, file, cb) => {
+    const allowed = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'];
+    if (allowed.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Format file tidak didukung. Gunakan PNG, JPG, GIF, atau WebP.'));
+    }
+  }
+});
 
 // All admin routes require authentication + admin role
 router.use(authenticate, authorizeAdmin);
@@ -46,10 +61,6 @@ router.get('/admin/users', async (req, res) => {
  *     responses:
  *       200:
  *         description: Array of games
- *       401:
- *         description: Unauthorized
- *       403:
- *         description: Forbidden
  */
 router.get('/admin/games', async (req, res) => {
   try {
@@ -60,8 +71,12 @@ router.get('/admin/games', async (req, res) => {
       id: g.id,
       name: g.name,
       slug: g.slug,
-      logoUrl: g.logoUrl,
-      bgUrl: g.bgUrl,
+      hasLogo: !!g.logo,
+      hasBg: !!g.bg,
+      hasIcon: !!g.itemIcon,
+      logoUrl: g.logo ? `/api/game-media/${g.id}/logo` : null,
+      bgUrl: g.bg ? `/api/game-media/${g.id}/bg` : null,
+      bgPosition: g.bgPosition,
       hasZone: g.hasZone,
       itemCount: g.items?.length || 0,
       createdAt: g.createdAt
@@ -97,7 +112,24 @@ router.get('/admin/games/:id', async (req, res) => {
       where: { id: req.params.id }
     });
     if (!game) return res.status(404).json({ success: false, message: "Game tidak ditemukan" });
-    res.json({ success: true, data: game });
+
+    const data = {
+      ...game,
+      logo: undefined,
+      bg: undefined,
+      itemIcon: undefined,
+      hasLogo: !!game.logo,
+      hasBg: !!game.bg,
+      hasIcon: !!game.itemIcon,
+      logoUrl: game.logo ? `/api/game-media/${game.id}/logo` : null,
+      bgUrl: game.bg ? `/api/game-media/${game.id}/bg` : null,
+      itemIconUrl: game.itemIcon ? `/api/game-media/${game.id}/icon` : null
+    };
+    delete data.logo;
+    delete data.bg;
+    delete data.itemIcon;
+
+    res.json({ success: true, data });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
@@ -107,34 +139,41 @@ router.get('/admin/games/:id', async (req, res) => {
  * @openapi
  * /api/admin/games:
  *   post:
- *     summary: Create a new game (admin)
+ *     summary: Create a new game with images (admin)
  *     tags: [Admin]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             required: [name, slug]
  *             properties:
  *               name: { type: string }
  *               slug: { type: string }
- *               logoUrl: { type: string }
- *               bgUrl: { type: string }
+ *               logo: { type: string, format: binary }
+ *               bg: { type: string, format: binary }
+ *               itemIcon: { type: string, format: binary }
  *               hasZone: { type: boolean }
+ *               bgPosition: { type: string }
  *     responses:
  *       201:
  *         description: Game created
  *       400:
  *         description: Validation error
  */
-router.post('/admin/games', async (req, res) => {
+router.post('/admin/games', upload.fields([
+  { name: 'logo', maxCount: 1 },
+  { name: 'bg', maxCount: 1 },
+  { name: 'itemIcon', maxCount: 1 }
+]), async (req, res) => {
   try {
     const {
-      name, slug, logoUrl, itemIconUrl, bgUrl, bgPosition,
-      hasZone, userIdLabel, userIdPlaceholder,
+      name, slug,
+      hasZone, bgPosition,
+      userIdLabel, userIdPlaceholder,
       zoneIdLabel, zoneIdPlaceholder, zoneIdHint, zoneIdMaxLength
     } = req.body;
 
@@ -151,22 +190,26 @@ router.post('/admin/games', async (req, res) => {
       data: {
         name,
         slug,
-        logoUrl: logoUrl || "",
-        itemIconUrl: itemIconUrl || null,
-        bgUrl: bgUrl || null,
+        logo: req.files?.logo?.[0]?.buffer || undefined,
+        itemIcon: req.files?.itemIcon?.[0]?.buffer || undefined,
+        bg: req.files?.bg?.[0]?.buffer || undefined,
         bgPosition: bgPosition || null,
-        hasZone: hasZone !== false,
+        hasZone: hasZone !== 'false',
         userIdLabel: userIdLabel || "USER ID",
         userIdPlaceholder: userIdPlaceholder || "Masukkan User ID",
         zoneIdLabel: zoneIdLabel || "ZONE ID",
         zoneIdPlaceholder: zoneIdPlaceholder || "Zone ID",
         zoneIdHint: zoneIdHint || "4 DIGIT",
-        zoneIdMaxLength: zoneIdMaxLength || 4,
+        zoneIdMaxLength: zoneIdMaxLength ? parseInt(zoneIdMaxLength) : 4,
         items: { set: [] }
       }
     });
 
-    res.status(201).json({ success: true, message: "Game berhasil ditambahkan", data: game });
+    res.status(201).json({
+      success: true,
+      message: "Game berhasil ditambahkan",
+      data: { id: game.id, name: game.name, slug: game.slug }
+    });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
@@ -176,7 +219,7 @@ router.post('/admin/games', async (req, res) => {
  * @openapi
  * /api/admin/games/{id}:
  *   put:
- *     summary: Update a game (admin)
+ *     summary: Update a game and its images (admin)
  *     tags: [Admin]
  *     security:
  *       - bearerAuth: []
@@ -186,40 +229,61 @@ router.post('/admin/games', async (req, res) => {
  *         required: true
  *         schema: { type: string }
  *     requestBody:
- *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
  *               name: { type: string }
  *               slug: { type: string }
- *               logoUrl: { type: string }
- *               bgUrl: { type: string }
+ *               logo: { type: string, format: binary }
+ *               bg: { type: string, format: binary }
+ *               itemIcon: { type: string, format: binary }
+ *               hasZone: { type: boolean }
+ *               bgPosition: { type: string }
  *     responses:
  *       200:
  *         description: Game updated
  *       404:
  *         description: Game not found
  */
-router.put('/admin/games/:id', async (req, res) => {
+router.put('/admin/games/:id', upload.fields([
+  { name: 'logo', maxCount: 1 },
+  { name: 'bg', maxCount: 1 },
+  { name: 'itemIcon', maxCount: 1 }
+]), async (req, res) => {
   try {
+    const existing = await req.prisma.games.findUnique({ where: { id: req.params.id } });
+    if (!existing) return res.status(404).json({ success: false, message: "Game tidak ditemukan" });
+
     const updateData = {};
-    const fields = [
-      'name', 'slug', 'logoUrl', 'itemIconUrl', 'bgUrl', 'bgPosition',
-      'hasZone', 'userIdLabel', 'userIdPlaceholder',
-      'zoneIdLabel', 'zoneIdPlaceholder', 'zoneIdHint', 'zoneIdMaxLength'
+    const textFields = [
+      'name', 'slug', 'bgPosition',
+      'userIdLabel', 'userIdPlaceholder',
+      'zoneIdLabel', 'zoneIdPlaceholder', 'zoneIdHint'
     ];
 
-    for (const field of fields) {
+    for (const field of textFields) {
       if (req.body[field] !== undefined) updateData[field] = req.body[field];
     }
+    if (req.body.hasZone !== undefined) updateData.hasZone = req.body.hasZone !== 'false';
+    if (req.body.zoneIdMaxLength !== undefined) updateData.zoneIdMaxLength = parseInt(req.body.zoneIdMaxLength);
+
+    // Handle image uploads — only update if a new file was sent
+    if (req.files?.logo?.[0]?.buffer) updateData.logo = req.files.logo[0].buffer;
+    if (req.files?.bg?.[0]?.buffer) updateData.bg = req.files.bg[0].buffer;
+    if (req.files?.itemIcon?.[0]?.buffer) updateData.itemIcon = req.files.itemIcon[0].buffer;
+
+    // Handle image removal flags
+    if (req.body.removeLogo === 'true') updateData.logo = null;
+    if (req.body.removeBg === 'true') updateData.bg = null;
+    if (req.body.removeIcon === 'true') updateData.itemIcon = null;
 
     if (updateData.slug) {
-      const existing = await req.prisma.games.findFirst({
+      const slugConflict = await req.prisma.games.findFirst({
         where: { slug: updateData.slug, id: { not: req.params.id } }
       });
-      if (existing) return res.status(400).json({ success: false, message: "Slug sudah digunakan" });
+      if (slugConflict) return res.status(400).json({ success: false, message: "Slug sudah digunakan" });
     }
 
     const game = await req.prisma.games.update({
@@ -227,7 +291,7 @@ router.put('/admin/games/:id', async (req, res) => {
       data: updateData
     });
 
-    res.json({ success: true, message: "Game berhasil diupdate", data: game });
+    res.json({ success: true, message: "Game berhasil diupdate", data: { id: game.id, name: game.name } });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
@@ -263,7 +327,7 @@ router.delete('/admin/games/:id', async (req, res) => {
 
 // ==============================
 // GAME ITEMS CRUD (embedded)
-// ==============================
+// ============================== (unchanged — items stay as JSON)
 
 /**
  * @openapi
@@ -322,7 +386,6 @@ router.get('/admin/games/:id/items', async (req, res) => {
  *               qty: { type: integer }
  *               originalPrice: { type: number }
  *               discountPercent: { type: number }
- *               finalPrice: { type: number }
  *     responses:
  *       201:
  *         description: Item added
@@ -348,11 +411,11 @@ router.post('/admin/games/:id/items', async (req, res) => {
     }
 
     const newItem = {
-      qty,
+      qty: parseInt(qty),
       itemName,
-      originalPrice,
-      discountPercent: discountPercent || 0,
-      finalPrice: finalPrice ?? Math.round(originalPrice * (1 - (discountPercent || 0) / 100))
+      originalPrice: parseFloat(originalPrice),
+      discountPercent: parseFloat(discountPercent || 0),
+      finalPrice: finalPrice ?? Math.round(parseFloat(originalPrice) * (1 - (parseFloat(discountPercent || 0) / 100)))
     };
 
     await req.prisma.games.update({
@@ -417,12 +480,13 @@ router.put('/admin/games/:id/items/:itemName', async (req, res) => {
     const existing = items[idx];
 
     const updatedItem = {
-      qty: qty ?? existing.qty,
+      qty: qty !== undefined ? parseInt(qty) : existing.qty,
       itemName: itemName ?? existing.itemName,
-      originalPrice: originalPrice ?? existing.originalPrice,
-      discountPercent: discountPercent ?? existing.discountPercent,
+      originalPrice: originalPrice !== undefined ? parseFloat(originalPrice) : existing.originalPrice,
+      discountPercent: discountPercent !== undefined ? parseFloat(discountPercent) : existing.discountPercent,
       finalPrice: finalPrice ?? Math.round(
-        (originalPrice ?? existing.originalPrice) * (1 - ((discountPercent ?? existing.discountPercent) / 100))
+        (originalPrice !== undefined ? parseFloat(originalPrice) : existing.originalPrice) *
+        (1 - ((discountPercent !== undefined ? parseFloat(discountPercent) : existing.discountPercent) / 100))
       )
     };
 

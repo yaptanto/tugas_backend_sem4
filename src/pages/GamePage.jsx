@@ -11,7 +11,12 @@ const DiamondCard = ({ qty, price, disc, discPrice, index, activeIndex, setActiv
           <div className={`game-card card ${index === activeIndex ? 'active' : ''}`} onClick={() => setActiveDiamondIndex(index === activeIndex ? null : index)}>
             <p>{qty} {itemName}</p>
             <div className="game-img-container">
-              <img src={iconSrc || "/asset/logo_game/gems.png"} alt="" />
+              {iconSrc ? (
+                <img src={iconSrc} alt="" onError={e => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
+              ) : null}
+              <div className="game-icon-placeholder" style={{ display: iconSrc ? 'none' : 'flex' }}>
+                <span className="game-icon-letter">{itemName.charAt(0)}</span>
+              </div>
             </div>
             <div className="game-card-bottom">
               <p>Dari</p>
@@ -187,7 +192,9 @@ const GamePage = () => {
       <div
         className="game-bg"
         style={{
-          backgroundImage: game?.bgUrl ? `url('${game.bgUrl}')` : undefined,
+          backgroundImage: game?.bgUrl
+            ? `url('${game.bgUrl}')`
+            : 'linear-gradient(135deg, #0c0c1a 0%, #1a1a3e 50%, #16162b 100%)',
           backgroundPosition: game?.bgPosition || "center",
           backgroundRepeat: "no-repeat"
         }}

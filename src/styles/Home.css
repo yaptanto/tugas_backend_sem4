@@ -63,6 +63,24 @@
     border-radius: 10px 10px 0 0;
 }
 
+.home-gameicon-placeholder {
+  width: 100%;
+  aspect-ratio: 180 / 155;
+  background: linear-gradient(135deg, #2a2a4a 0%, #1a1a3e 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px 10px 0 0;
+}
+
+.home-gameicon-letter {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #4a4a7a;
+  text-transform: uppercase;
+  font-family: 'Audiowide', sans-serif;
+}
+
 .home-gamecard .home-gametitle {
     text-align: center;
     color: #f0f0f0;
@@ -101,6 +119,10 @@
     }
 
     .home-gamecard .home-gameicon {
+        height: 155px;
+    }
+
+    .home-gameicon-placeholder {
         height: 155px;
     }
 

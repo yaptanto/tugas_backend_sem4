@@ -37,10 +37,10 @@ model games {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   name        String   // "Mobile Legends: Bang Bang"
   slug        String   @unique // "mlbb", "roblox"
-  logoUrl     String   // "/asset/logo_game/mlbb.png"
-  itemIconUrl String?  // "/asset/logo_game/diamond.png" — icon shown on item cards
+  logo        Bytes?   // Game logo image binary
+  itemIcon    Bytes?   // Icon shown on item cards (binary)
 
-  bgUrl              String?   // "/asset/logo_game/coc_bg.png"
+  bg                 Bytes?    // Background image binary
   bgPosition         String?   // "50% calc(50% - 300px)"
   hasZone            Boolean   @default(true)
   userIdLabel        String    @default("USER ID")

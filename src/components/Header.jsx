@@ -8,9 +8,19 @@ const Header = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [filteredPages, setFilteredPages] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
-  const [avatarKey, setAvatarKey] = useState(() => Date.now()); // inisialisasi tanpa masalah karena di dalam useState
+  const [avatarKey, setAvatarKey] = useState(() => Date.now());
+  const [games, setGames] = useState([]);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetch('/api/games')
+      .then(res => res.json())
+      .then(json => {
+        if (json.success) setGames(json.data);
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     const loadUserData = () => {
@@ -67,32 +77,11 @@ const Header = () => {
     };
   }, []);
 
-  const topupPages = [
-    {
-      name: "Mobile Legends",
-      path: "/game/mlbb",
-      keywords: ["mobile legends", "ml", "mlbb"],
-      image: "/asset/logo_game/mlbb.png",
-    },
-    {
-      name: "Clash of Clans",
-      path: "/game/coc",
-      keywords: ["clash of clans", "coc"],
-      image: "/asset/logo_game/coc.png",
-    },
-    {
-      name: "Roblox",
-      path: "/game/roblox",
-      keywords: ["roblox", "robux"],
-      image: "/asset/logo_game/roblox.png",
-    },
-    {
-      name: "Valorant",
-      path: "/game/valorant",
-      keywords: ["valorant", "valo", "vp"],
-      image: "/asset/logo_game/valorant.png",
-    },
-  ];
+  const topupPages = games.map(g => ({
+    name: g.name,
+    path: `/game/${g.slug}`,
+    image: g.logo || '/asset/logo_game/diamond.png',
+  }));
 
   const handleInputChange = (e) => {
     const query = e.target.value;
@@ -105,9 +94,7 @@ const Header = () => {
     } else {
       const lowerQuery = query.toLowerCase();
       const filtered = topupPages.filter(
-        (page) =>
-          page.name.toLowerCase().includes(lowerQuery) ||
-          page.keywords.some((keyword) => keyword.includes(lowerQuery))
+        (page) => page.name.toLowerCase().includes(lowerQuery)
       );
       setFilteredPages(filtered);
       setShowDropdown(true);
