@@ -26,4 +26,16 @@ export default defineConfig([
       'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
     },
   },
+  // Backend files (Node.js environment)
+  {
+    files: ['index.js', 'lib/**/*.{js,ts}', 'prisma/**/*.{js,ts}', 'src/routes/**/*.{js,ts}', 'src/services/**/*.{js,ts}', 'src/middleware/**/*.{js,ts}', 'src/documentation/**/*.{js,ts}'],
+    languageOptions: {
+      ecmaVersion: 2020,
+      globals: globals.node,
+      sourceType: 'module',
+    },
+    rules: {
+      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+    },
+  },
 ])

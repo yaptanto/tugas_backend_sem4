@@ -29,7 +29,9 @@ function AppLayout() {
   const isAdmin = location.pathname.startsWith('/admin');
 
   return (
-    <div className="app-container d-flex flex-column min-vh-100">
+    <>
+      <div className="home-bg-layer" />
+      <div className="app-container d-flex flex-column min-vh-100">
       {!isAdmin && <Header />}
       <Routes>
         <Route path="/" element={<Home />} />
@@ -52,6 +54,7 @@ function AppLayout() {
       </Routes>
       {!isAdmin && <Footer />}
     </div>
+    </>
   );
 }
 
