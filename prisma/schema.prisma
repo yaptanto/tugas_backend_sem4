@@ -42,6 +42,9 @@ model games {
 
   bg                 Bytes?    // Background image binary
   bgPosition         String?   // "50% calc(50% - 300px)"
+  badge              String?   // "Hot", "New", "Promo", or null
+  categoryId         String?   @db.ObjectId
+  category           categories? @relation(fields: [categoryId], references: [id])
   hasZone            Boolean   @default(true)
   userIdLabel        String    @default("USER ID")
   userIdPlaceholder  String    @default("Masukkan User ID")
@@ -67,7 +70,20 @@ type TopUpItem {
 }
 
 // ==========================================
-// 3. PAYMENT METHODS
+// 3. CATEGORIES
+// For game categorization (Mobile, PC, RPG, etc.)
+// ==========================================
+model categories {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String   @unique // "Mobile", "PC", "RPG"
+  slug      String   @unique // "mobile", "pc", "rpg"
+  createdAt DateTime @default(now())
+
+  games     games[]
+}
+
+// ==========================================
+// 4. PAYMENT METHODS
 // Untuk menggantikan listPayment statis di frontend
 // ==========================================
 model payment_methods {

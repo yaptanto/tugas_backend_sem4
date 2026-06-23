@@ -65,12 +65,16 @@ router.get('/admin/users', async (req, res) => {
 router.get('/admin/games', async (req, res) => {
   try {
     const games = await req.prisma.games.findMany({
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
+      include: { category: true }
     });
     const data = games.map(g => ({
       id: g.id,
       name: g.name,
       slug: g.slug,
+      badge: g.badge,
+      category: g.category ? { id: g.category.id, name: g.category.name } : null,
+      categoryId: g.categoryId,
       hasLogo: !!g.logo,
       hasBg: !!g.bg,
       hasIcon: !!g.itemIcon,
@@ -109,7 +113,8 @@ router.get('/admin/games', async (req, res) => {
 router.get('/admin/games/:id', async (req, res) => {
   try {
     const game = await req.prisma.games.findUnique({
-      where: { id: req.params.id }
+      where: { id: req.params.id },
+      include: { category: true }
     });
     if (!game) return res.status(404).json({ success: false, message: "Game tidak ditemukan" });
 
@@ -118,6 +123,7 @@ router.get('/admin/games/:id', async (req, res) => {
       logo: undefined,
       bg: undefined,
       itemIcon: undefined,
+      category: game.category ? { id: game.category.id, name: game.category.name } : null,
       hasLogo: !!game.logo,
       hasBg: !!game.bg,
       hasIcon: !!game.itemIcon,
@@ -171,7 +177,7 @@ router.post('/admin/games', upload.fields([
 ]), async (req, res) => {
   try {
     const {
-      name, slug,
+      name, slug, badge, categoryId,
       hasZone, bgPosition,
       userIdLabel, userIdPlaceholder,
       zoneIdLabel, zoneIdPlaceholder, zoneIdHint, zoneIdMaxLength
@@ -190,6 +196,8 @@ router.post('/admin/games', upload.fields([
       data: {
         name,
         slug,
+        badge: badge || null,
+        categoryId: categoryId || null,
         logo: req.files?.logo?.[0]?.buffer || undefined,
         itemIcon: req.files?.itemIcon?.[0]?.buffer || undefined,
         bg: req.files?.bg?.[0]?.buffer || undefined,
@@ -266,6 +274,9 @@ router.put('/admin/games/:id', upload.fields([
     for (const field of textFields) {
       if (req.body[field] !== undefined) updateData[field] = req.body[field];
     }
+    // badge can be cleared — empty string means "no badge"
+    if (req.body.badge !== undefined) updateData.badge = req.body.badge || null;
+    if (req.body.categoryId !== undefined) updateData.categoryId = req.body.categoryId || null;
     if (req.body.hasZone !== undefined) updateData.hasZone = req.body.hasZone !== 'false';
     if (req.body.zoneIdMaxLength !== undefined) updateData.zoneIdMaxLength = parseInt(req.body.zoneIdMaxLength);
 
@@ -547,6 +558,56 @@ router.delete('/admin/games/:id/items/:itemName', async (req, res) => {
     });
 
     res.json({ success: true, message: "Item berhasil dihapus" });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// ==============================
+// CATEGORIES CRUD (admin)
+// ==============================
+
+router.get('/admin/categories', async (req, res) => {
+  try {
+    const categories = await req.prisma.categories.findMany({
+      orderBy: { name: 'asc' }
+    });
+    res.json({ success: true, data: categories });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+router.post('/admin/categories', async (req, res) => {
+  try {
+    const { name, slug } = req.body;
+    if (!name || !slug) {
+      return res.status(400).json({ success: false, message: "Nama dan slug wajib diisi" });
+    }
+    const category = await req.prisma.categories.create({ data: { name, slug } });
+    res.status(201).json({ success: true, message: "Kategori berhasil ditambahkan", data: category });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+router.put('/admin/categories/:id', async (req, res) => {
+  try {
+    const { name, slug } = req.body;
+    const category = await req.prisma.categories.update({
+      where: { id: req.params.id },
+      data: { name, slug }
+    });
+    res.json({ success: true, message: "Kategori berhasil diupdate", data: category });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+router.delete('/admin/categories/:id', async (req, res) => {
+  try {
+    await req.prisma.categories.delete({ where: { id: req.params.id } });
+    res.json({ success: true, message: "Kategori berhasil dihapus" });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

@@ -93,6 +93,7 @@ export default function Admin() {
   const [activeTab, setActiveTab] = useState('games');
   const [games, setGames] = useState([]);
   const [users, setUsers] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Modal & form state
@@ -101,7 +102,7 @@ export default function Admin() {
   const [gameItems, setGameItems] = useState([]);
 
   // Game form — text fields
-  const emptyGameForm = { name: '', slug: '', bgPosition: '', hasZone: true };
+  const emptyGameForm = { name: '', slug: '', bgPosition: '', hasZone: true, badge: '', categoryId: '' };
   const [gameForm, setGameForm] = useState(emptyGameForm);
   // Game form — file fields (selected new files)
   const [gameFiles, setGameFiles] = useState({ logo: null, bg: null, itemIcon: null });
@@ -114,6 +115,10 @@ export default function Admin() {
   // Item form
   const emptyItemForm = { qty: '', itemName: '', originalPrice: '', discountPercent: '0' };
   const [itemForm, setItemForm] = useState(emptyItemForm);
+
+  const emptyCatForm = { name: '', slug: '' };
+  const [catForm, setCatForm] = useState(emptyCatForm);
+  const [catEdit, setCatEdit] = useState(null);
 
   // Refresh key to bust image cache after updates
   const [refreshKey, setRefreshKey] = useState(0);
@@ -154,6 +159,15 @@ export default function Admin() {
     } catch { showToast('Gagal memuat users', 'error'); }
   }, []);
 
+  const loadCategories = useCallback(async () => {
+    try {
+      const token = getAuthToken();
+      const res = await fetch('/api/admin/categories', { headers: { Authorization: `Bearer ${token}` } });
+      const json = await res.json();
+      if (json.success) setCategories(json.data);
+    } catch {}
+  }, []);
+
   const loadItems = useCallback(async (gameId) => {
     if (!gameId) { setGameItems([]); return; }
     try {
@@ -169,8 +183,8 @@ export default function Admin() {
   useEffect(() => {
     if (!userData) return;
     setLoading(true);
-    Promise.all([loadGames(), loadUsers()]).finally(() => setLoading(false));
-  }, [userData, loadGames, loadUsers]);
+    Promise.all([loadGames(), loadUsers(), loadCategories()]).finally(() => setLoading(false));
+  }, [userData, loadGames, loadUsers, loadCategories]);
 
   useEffect(() => {
     if (activeTab === 'items' && selectedGame) loadItems(selectedGame);
@@ -194,6 +208,8 @@ export default function Admin() {
     if (gameFiles.logo) fd.append('logo', gameFiles.logo);
     if (gameFiles.bg) fd.append('bg', gameFiles.bg);
     if (gameFiles.itemIcon) fd.append('itemIcon', gameFiles.itemIcon);
+    fd.append('badge', gameForm.badge);
+    fd.append('categoryId', gameForm.categoryId);
     if (removeImages.logo) fd.append('removeLogo', 'true');
     if (removeImages.bg) fd.append('removeBg', 'true');
     if (removeImages.itemIcon) fd.append('removeIcon', 'true');
@@ -249,7 +265,9 @@ export default function Admin() {
         const g = json.data;
         setGameForm({
           name: g.name || '', slug: g.slug || '',
-          bgPosition: g.bgPosition || '', hasZone: g.hasZone !== false
+          bgPosition: g.bgPosition || '', hasZone: g.hasZone !== false,
+          badge: g.badge || '',
+          categoryId: g.categoryId || ''
         });
         setHasImages({ logo: g.hasLogo || false, bg: g.hasBg || false, icon: g.hasIcon || false });
         setGameFiles({ logo: null, bg: null, itemIcon: null });
@@ -342,6 +360,7 @@ export default function Admin() {
     { key: 'games', label: 'Games', icon: '🎮' },
     { key: 'items', label: 'Items', icon: '📦' },
     { key: 'users', label: 'Users', icon: '👥' },
+    { key: 'categories', label: 'Categories', icon: '🏷️' },
   ];
 
   return (
@@ -400,6 +419,8 @@ export default function Admin() {
                         <tr>
                           <th>Nama</th>
                           <th>Slug</th>
+                          <th>Category</th>
+                          <th>Badge</th>
                           <th>Items</th>
                           <th>Logo</th>
                           <th style={{ width: 160 }}>Aksi</th>
@@ -407,11 +428,13 @@ export default function Admin() {
                       </thead>
                       <tbody>
                         {games.length === 0 ? (
-                          <tr><td colSpan={5} className="admin-empty">Belum ada game</td></tr>
+                          <tr><td colSpan={7} className="admin-empty">Belum ada game</td></tr>
                         ) : games.map(g => (
                           <tr key={g.id}>
                             <td><span className="admin-game-name">{g.name}</span></td>
                             <td><code className="admin-code">{g.slug}</code></td>
+                            <td>{g.category ? <span className="admin-category-badge">{g.category.name}</span> : '-'}</td>
+                            <td>{g.badge ? <span className="admin-badge-badge" data-badge={g.badge}>{g.badge}</span> : '-'}</td>
                             <td><span className="admin-badge">{g.itemCount}</span></td>
                             <td>
                               {g.hasLogo
@@ -533,6 +556,48 @@ export default function Admin() {
                   </div>
                 </section>
               )}
+
+              {activeTab === 'categories' && (
+                <section>
+                  <div className="admin-section-header">
+                    <p className="admin-section-desc">{categories.length} kategori</p>
+                    <button className="admin-btn admin-btn-primary"
+                      onClick={() => { setCatForm({ name: '', slug: '' }); setCatEdit(null); setModal('addCategory'); }}>
+                      + Tambah Kategori
+                    </button>
+                  </div>
+                  <div className="admin-table-wrap">
+                    <table className="admin-table">
+                      <thead>
+                        <tr><th>Nama</th><th>Slug</th><th style={{ width: 160 }}>Aksi</th></tr>
+                      </thead>
+                      <tbody>
+                        {categories.length === 0 ? (
+                          <tr><td colSpan={3} className="admin-empty">Belum ada kategori</td></tr>
+                        ) : categories.map(cat => (
+                          <tr key={cat.id}>
+                            <td><span className="admin-game-name">{cat.name}</span></td>
+                            <td><code className="admin-code">{cat.slug}</code></td>
+                            <td>
+                              <div className="admin-actions">
+                                <button className="admin-btn-sm admin-btn-edit"
+                                  onClick={() => { setCatForm({ name: cat.name, slug: cat.slug }); setCatEdit(cat.id); setModal('addCategory'); }}>Edit</button>
+                                <button className="admin-btn-sm admin-btn-delete"
+                                  onClick={async () => {
+                                    if (!confirm(`Hapus kategori "${cat.name}"?`)) return;
+                                    const token = getAuthToken();
+                                    await fetch(`/api/admin/categories/${cat.id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
+                                    loadCategories();
+                                  }}>Hapus</button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+              )}
             </>
           )}
         </div>
@@ -558,6 +623,26 @@ export default function Admin() {
                 onChange={e => setGameForm(p => ({ ...p, hasZone: e.target.value === 'true' }))}>
                 <option value="true">Ya — Game ini punya zone/server ID</option>
                 <option value="false">Tidak — Hanya user ID saja</option>
+              </select>
+            </div>
+            <div className="admin-field">
+              <label>Badge</label>
+              <select value={gameForm.badge}
+                onChange={e => setGameForm(p => ({ ...p, badge: e.target.value }))}>
+                <option value="">Tidak ada</option>
+                <option value="Hot">Hot</option>
+                <option value="New">New</option>
+                <option value="Promo">Promo</option>
+              </select>
+            </div>
+            <div className="admin-field">
+              <label>Kategori Game</label>
+              <select value={gameForm.categoryId}
+                onChange={e => setGameForm(p => ({ ...p, categoryId: e.target.value }))}>
+                <option value="">Pilih kategori</option>
+                {categories.map(cat => (
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                ))}
               </select>
             </div>
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '24px' }}>
@@ -603,6 +688,26 @@ export default function Admin() {
                 <option value="false">Tidak</option>
               </select>
             </div>
+            <div className="admin-field">
+              <label>Badge</label>
+              <select value={gameForm.badge}
+                onChange={e => setGameForm(p => ({ ...p, badge: e.target.value }))}>
+                <option value="">Tidak ada</option>
+                <option value="Hot">Hot</option>
+                <option value="New">New</option>
+                <option value="Promo">Promo</option>
+              </select>
+            </div>
+            <div className="admin-field">
+              <label>Kategori Game</label>
+              <select value={gameForm.categoryId}
+                onChange={e => setGameForm(p => ({ ...p, categoryId: e.target.value }))}>
+                <option value="">Pilih kategori</option>
+                {categories.map(cat => (
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                ))}
+              </select>
+            </div>
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '24px' }}>
               <button type="button" className="admin-btn admin-btn-secondary" onClick={() => setModal(null)}>Batal</button>
               <button type="submit" className="admin-btn admin-btn-primary">Update</button>
@@ -626,6 +731,40 @@ export default function Admin() {
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '24px' }}>
               <button type="button" className="admin-btn admin-btn-secondary" onClick={() => setModal(null)}>Batal</button>
               <button type="submit" className="admin-btn admin-btn-primary">Simpan</button>
+            </div>
+          </form>
+        </Modal>
+      )}
+
+      {/* === ADD/EDIT CATEGORY MODAL === */}
+      {modal === 'addCategory' && (
+        <Modal title={catEdit ? 'Edit Kategori' : 'Tambah Kategori'} onClose={() => setModal(null)}>
+          <form onSubmit={async (e) => {
+            e.preventDefault();
+            const token = getAuthToken();
+            const method = catEdit ? 'PUT' : 'POST';
+            const url = catEdit ? `/api/admin/categories/${catEdit}` : '/api/admin/categories';
+            const res = await fetch(url, {
+              method,
+              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+              body: JSON.stringify(catForm)
+            });
+            const json = await res.json();
+            if (json.success) {
+              showToast(json.message);
+              setModal(null);
+              setCatForm(emptyCatForm);
+              setCatEdit(null);
+              loadCategories();
+            } else showToast(json.message, 'error');
+          }}>
+            <Input label="Nama Kategori" value={catForm.name}
+              onChange={v => setCatForm(p => ({ ...p, name: v }))} required placeholder="Mobile" />
+            <Input label="Slug" value={catForm.slug}
+              onChange={v => setCatForm(p => ({ ...p, slug: v }))} required placeholder="mobile" />
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '24px' }}>
+              <button type="button" className="admin-btn admin-btn-secondary" onClick={() => setModal(null)}>Batal</button>
+              <button type="submit" className="admin-btn admin-btn-primary">{catEdit ? 'Update' : 'Simpan'}</button>
             </div>
           </form>
         </Modal>

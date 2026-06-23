@@ -33,13 +33,15 @@ router.get('/test', (req, res) => res.json({ ok: true }));
 router.get('/games', async (req, res) => {
   try {
     const games = await req.prisma.games.findMany({
-      select: { id: true, name: true, slug: true, hasZone: true, bgPosition: true, updatedAt: true, logo: true, bg: true }
+      select: { id: true, name: true, slug: true, badge: true, categoryId: true, hasZone: true, bgPosition: true, updatedAt: true, logo: true, bg: true, category: { select: { id: true, name: true, slug: true } } }
     });
     const ts = Date.now();
     const data = games.map(g => ({
       id: g.id,
       name: g.name,
       slug: g.slug,
+      badge: g.badge,
+      category: g.category,
       hasZone: g.hasZone,
       bgPosition: g.bgPosition,
       updatedAt: g.updatedAt,
@@ -72,7 +74,7 @@ router.get('/games', async (req, res) => {
 router.get('/games/:slug', async (req, res) => {
   try {
     const { slug } = req.params;
-    const game = await req.prisma.games.findUnique({ where: { slug } });
+    const game = await req.prisma.games.findUnique({ where: { slug }, include: { category: true } });
 
     if (!game) {
       return res.status(404).json({ success: false, message: "Game tidak ditemukan" });
@@ -82,6 +84,8 @@ router.get('/games/:slug', async (req, res) => {
       id: game.id,
       name: game.name,
       slug: game.slug,
+      badge: game.badge,
+      category: game.category,
       logoUrl: game.logo ? `/api/game-media/${game.id}/logo?v=${game.updatedAt?.getTime() || Date.now()}` : null,
       itemIconUrl: game.itemIcon ? `/api/game-media/${game.id}/icon?v=${game.updatedAt?.getTime() || Date.now()}` : null,
       bgUrl: game.bg ? `/api/game-media/${game.id}/bg?v=${game.updatedAt?.getTime() || Date.now()}` : null,
@@ -201,6 +205,27 @@ router.get('/leaderboard', async (req, res) => {
     res.json({ success: true, data });
   } catch (err) {
     req.transactionService.handleError(res, err, "Gagal mengambil leaderboard");
+  }
+});
+
+/**
+ * @openapi
+ * /api/categories:
+ *   get:
+ *     summary: Get all game categories
+ *     tags: [Public]
+ *     responses:
+ *       200:
+ *         description: List of categories
+ */
+router.get('/categories', async (req, res) => {
+  try {
+    const categories = await req.prisma.categories.findMany({
+      orderBy: { name: 'asc' }
+    });
+    res.json({ success: true, data: categories });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
 });
 

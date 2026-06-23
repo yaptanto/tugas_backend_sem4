@@ -35,64 +35,126 @@
   color: #ffffff;
 }
 
+/* ============================================
+   Game Cards
+   ============================================ */
+
 .home-game-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 10px;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    margin-top: 16px;
     gap: 20px;
     padding: 0 15px;
 }
 
-.home-gamecard {
-    flex: 0 1 300px;
-    height: 245px;
-    background-color: rgb(42, 42, 62);
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    transition: transform 0.2s, box-shadow 0.2s;
-    text-decoration: none;
-    margin: 0;
+/* --- Card --- */
+.home-game-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    display: flex;
+    flex-direction: column;
+    background: rgba(30, 30, 55, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
     overflow: hidden;
-    height: auto;
-    min-height: 185px;
+    text-decoration: none;
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+                border-color 0.3s ease,
+                box-shadow 0.3s ease;
+    cursor: pointer;
 }
 
-.home-gamecard:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 20px rgba(0, 170, 255, 0.7);
+.home-game-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(0, 242, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 242, 255, 0.12),
+                0 0 0 1px rgba(0, 242, 255, 0.08);
 }
 
-.home-gamecard .home-gameicon {
+.home-game-card:active {
+    transform: translateY(-1px);
+}
+
+/* --- Badge --- */
+.home-game-card-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 2;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.home-game-card-badge--hot {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: #fff;
+}
+
+.home-game-card-badge--new {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: #fff;
+}
+
+.home-game-card-badge--promo {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #fff;
+}
+
+/* --- Logo --- */
+.home-game-card-logo-wrap {
     width: 100%;
+    aspect-ratio: 180 / 155;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.04);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.home-game-card-logo {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
-    border-radius: 10px 10px 0 0;
+    display: block;
 }
 
-.home-gameicon-placeholder {
-  width: 100%;
-  aspect-ratio: 180 / 155;
-  background: linear-gradient(135deg, #2a2a4a 0%, #1a1a3e 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px 10px 0 0;
+.home-game-card-logo-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #2a2a4a 0%, #1a1a3e 100%);
 }
 
-.home-gameicon-letter {
-  font-size: 3rem;
-  font-weight: 700;
-  color: #4a4a7a;
-  text-transform: uppercase;
-  font-family: 'Audiowide', sans-serif;
+.home-game-card-logo-letter {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #4a4a7a;
+    text-transform: uppercase;
+    font-family: 'Inter', sans-serif;
 }
 
-.home-gamecard .home-gametitle {
+/* --- Title --- */
+.home-game-card-title {
+    margin: 0;
+    padding: 12px 14px;
+    color: #e2e8f0;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
     text-align: center;
-    color: #f0f0f0;
-    margin: 10px 5px;
-    font-size: 16px;
-    font-family: 'Courier New', Courier, monospace;
+    line-height: 1.3;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -161,34 +223,705 @@
     background: transparent;
 }
 
+/* ============================================
+   SMOOTH SCROLL (global)
+   ============================================ */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ============================================
+   1.  HERO CAROUSEL
+   ============================================ */
+
+.home-hero-carousel {
+  margin-top: 30px;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 8px 40px rgba(0, 242, 255, 0.08),
+              0 0 0 1px rgba(0, 242, 255, 0.05);
+}
+
+.home-hero-slide {
+  position: relative;
+  height: 460px;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.home-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(10, 10, 30, 0.88) 0%,
+    rgba(10, 10, 30, 0.65) 40%,
+    rgba(20, 20, 46, 0.55) 70%,
+    rgba(10, 10, 30, 0.80) 100%
+  );
+  z-index: 1;
+}
+
+.home-hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  max-width: 680px;
+  padding: 0 24px;
+}
+
+.home-hero-title {
+  font-family: 'Audiowide', sans-serif;
+  font-size: 2.8rem;
+  font-weight: 400;
+  color: #fff;
+  margin-bottom: 16px;
+  text-shadow: 0 0 30px rgba(0, 242, 255, 0.3),
+               0 2px 12px rgba(0, 0, 0, 0.5);
+  letter-spacing: 0.02em;
+}
+
+.home-hero-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.15rem;
+  color: rgba(226, 232, 240, 0.85);
+  margin-bottom: 28px;
+  line-height: 1.6;
+}
+
+.home-hero-cta {
+  display: inline-block;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 14px 40px;
+  border-radius: 50px;
+  color: #fff;
+  background: linear-gradient(135deg, #00f2ff, #0088cc);
+  text-decoration: none;
+  box-shadow: 0 4px 24px rgba(0, 242, 255, 0.35);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.home-hero-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 32px rgba(0, 242, 255, 0.5);
+  color: #fff;
+}
+
+/* Dark-themed carousel controls */
+.home-hero-carousel .carousel-control-prev-icon,
+.home-hero-carousel .carousel-control-next-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: rgba(10, 10, 30, 0.6);
+  backdrop-filter: blur(4px);
+  background-size: 50%;
+  border: 1px solid rgba(0, 242, 255, 0.2);
+}
+
+.home-hero-carousel .carousel-control-prev-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%2300f2ff'%3e%3cpath d='M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z'/%3e%3c/svg%3e");
+}
+
+.home-hero-carousel .carousel-control-next-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%2300f2ff'%3e%3cpath d='M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+}
+
+/* Dark carousel indicators */
+.home-hero-carousel .carousel-indicators [data-bs-target] {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.35);
+  border: none;
+  margin: 0 6px;
+  transition: all 0.3s ease;
+}
+
+.home-hero-carousel .carousel-indicators .active {
+  background-color: #00f2ff;
+  width: 28px;
+  border-radius: 6px;
+  box-shadow: 0 0 12px rgba(0, 242, 255, 0.5);
+}
+
+/* ============================================
+   2.  TRUST STRIP
+   ============================================ */
+
+.home-trust-strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  padding: 16px 28px;
+  margin-top: 16px;
+  background: rgba(30, 30, 55, 0.45);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 242, 255, 0.10);
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+}
+
+.home-trust-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: rgba(226, 232, 240, 0.80);
+  padding: 6px 14px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.home-trust-item i {
+  font-size: 1.1rem;
+  color: #00f2ff;
+}
+
+.home-trust-item:hover {
+  background: rgba(0, 242, 255, 0.10);
+  color: #fff;
+}
+
+.home-trust-strip-divider {
+  width: 1px;
+  height: 30px;
+  background: linear-gradient(to bottom, transparent, rgba(0, 242, 255, 0.4), transparent);
+}
+
+.home-trust-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fbbf24;
+  padding: 6px 18px;
+  border-radius: 20px;
+  background: rgba(251, 191, 36, 0.10);
+  border: 1px solid rgba(251, 191, 36, 0.20);
+  white-space: nowrap;
+}
+
+.home-trust-badge i {
+  font-size: 1rem;
+  color: #fbbf24;
+}
+
+/* ============================================
+   3.  SECTION DIVIDERS  (glow gradient lines)
+   ============================================ */
+
+.home-section-divider {
+  width: 60%;
+  max-width: 360px;
+  height: 2px;
+  margin: 40px auto;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #00f2ff 20%,
+    #7000ff 50%,
+    #ff0055 80%,
+    transparent
+  );
+  border-radius: 2px;
+  box-shadow: 0 0 12px rgba(0, 242, 255, 0.3),
+              0 0 24px rgba(112, 0, 255, 0.15);
+  opacity: 0.8;
+}
+
+/* ============================================
+   4.  SECTION TITLES
+   ============================================ */
+
+.home-section-title {
+  font-family: 'Audiowide', sans-serif;
+  font-size: 1.75rem;
+  font-weight: 400;
+  color: #fff;
+  margin: 0 0 20px;
+  text-align: center;
+  letter-spacing: 0.02em;
+  text-shadow: 0 0 20px rgba(0, 242, 255, 0.15);
+}
+
+.home-section-title-icon {
+  margin-right: 10px;
+}
+
+/* ============================================
+   5.  TRENDING GAMES  (horizontal scroll)
+   ============================================ */
+
+.home-trending-scroll {
+  display: flex;
+  overflow-x: auto;
+  gap: 16px;
+  padding: 8px 4px 20px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #00f2ff transparent;
+}
+
+.home-trending-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.home-trending-scroll::-webkit-scrollbar-track {
+  background: rgba(30, 30, 55, 0.3);
+  border-radius: 4px;
+}
+
+.home-trending-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #00f2ff, #0088cc);
+  border-radius: 4px;
+}
+
+.home-trending-scroll::-webkit-scrollbar-thumb:hover {
+  background: #00f2ff;
+}
+
+.home-trending-card {
+  min-width: 210px;
+  width: 210px;
+  flex-shrink: 0;
+  scroll-snap-align: start;
+}
+
+/* ============================================
+   6.  FILTER BAR  (sticky)
+   ============================================ */
+
+.home-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  padding: 12px 8px;
+  margin-bottom: 4px;
+  background: rgba(10, 10, 30, 0.70);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.home-filter-btn {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 8px 20px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(30, 30, 55, 0.5);
+  color: rgba(226, 232, 240, 0.75);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+.home-filter-btn:hover {
+  background: rgba(0, 242, 255, 0.10);
+  border-color: rgba(0, 242, 255, 0.25);
+  color: #fff;
+}
+
+.home-filter-btn--active {
+  background: linear-gradient(135deg, #00f2ff, #0088cc);
+  color: #0a0a1e;
+  border-color: transparent;
+  box-shadow: 0 2px 16px rgba(0, 242, 255, 0.30);
+}
+
+.home-filter-btn--active:hover {
+  background: linear-gradient(135deg, #00f2ff, #0088cc);
+  color: #0a0a1e;
+}
+
+/* ============================================
+   7.  WHY RAST-7
+   ============================================ */
+
+.home-why-section {
+  scroll-margin-top: 30px;
+}
+
+.home-why-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  align-items: stretch;
+}
+
+/* --- Video wrap --- */
+.home-why-video-wrap {
+  border-radius: 16px;
+  overflow: hidden;
+  background: rgba(30, 30, 55, 0.4);
+  border: 1px solid rgba(0, 242, 255, 0.10);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 16 / 10;
+  position: relative;
+}
+
+.home-why-video-wrap video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.home-why-video-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 10, 30, 0.85);
+  color: rgba(226, 232, 240, 0.6);
+  text-align: center;
+  gap: 12px;
+  padding: 20px;
+}
+
+.home-why-video-fallback i {
+  font-size: 3.5rem;
+  color: rgba(0, 242, 255, 0.5);
+}
+
+.home-why-video-fallback p {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* --- Glassmorphism card (bullet points) --- */
+.home-why-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20px;
+  padding: 32px 28px;
+  background: rgba(30, 30, 55, 0.45);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(0, 242, 255, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+/* --- Why item row --- */
+.home-why-item {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.home-why-item + .home-why-item {
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.home-why-item-icon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(0, 242, 255, 0.12), rgba(112, 0, 255, 0.12));
+  border: 1px solid rgba(0, 242, 255, 0.12);
+}
+
+.home-why-item-icon i {
+  font-size: 1.3rem;
+  color: #00f2ff;
+}
+
+.home-why-item h4 {
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 4px;
+}
+
+.home-why-item p {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  color: rgba(226, 232, 240, 0.70);
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* ============================================
+   8.  STATUS TEXT (loading / empty / error)
+   ============================================ */
+
+.home-status-text {
+  font-family: 'Inter', sans-serif;
+  color: #94a3b8;
+  text-align: center;
+  width: 100%;
+  padding: 40px 0;
+  margin: 0;
+}
+
+.home-status-text--error {
+  color: #ef4444;
+}
+
+/* ============================================
+   RESPONSIVE  (preserved & extended)
+   ============================================ */
+
 @media (max-width: 768px) {
     .home-index-container {
         padding: 0 10px;
     }
 
     .home-game-container {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
         padding: 0 10px;
-        gap: 15px;
+        gap: 14px;
     }
 
-    .home-gamecard {
-        flex: 0 1 150px;
-        height: 200px;
+    .home-game-card-title {
+        font-size: 0.85rem;
+        padding: 10px 12px;
     }
 
-    .home-gamecard .home-gameicon {
-        height: 155px;
+    .home-game-card-logo-letter {
+        font-size: 2.5rem;
     }
 
-    .home-gameicon-placeholder {
-        height: 155px;
-    }
-
-    .home-gamecard .home-gametitle {
-        font-size: 14px;
+    .home-game-card-badge {
+        font-size: 0.6rem;
+        padding: 3px 10px;
+        top: 6px;
+        right: 6px;
     }
 
     .home-audiowide-regular {
         font-size: 24px;
+    }
+
+    /* ----- new responsive: 768px ----- */
+    .home-hero-slide {
+      height: 340px;
+    }
+
+    .home-hero-title {
+      font-size: 1.8rem;
+    }
+
+    .home-hero-subtitle {
+      font-size: 0.95rem;
+    }
+
+    .home-hero-cta {
+      padding: 12px 32px;
+      font-size: 0.9rem;
+    }
+
+    .home-trust-strip {
+      padding: 14px 18px;
+      gap: 8px 14px;
+    }
+
+    .home-trust-item {
+      font-size: 0.78rem;
+      padding: 4px 10px;
+    }
+
+    .home-trust-badge {
+      font-size: 0.78rem;
+      padding: 4px 14px;
+    }
+
+    .home-section-title {
+      font-size: 1.4rem;
+    }
+
+    .home-section-divider {
+      width: 50%;
+      margin: 32px auto;
+    }
+
+    .home-trending-card {
+      min-width: 180px;
+      width: 180px;
+    }
+
+    .home-filter-bar {
+      gap: 6px;
+      padding: 10px 6px;
+    }
+
+    .home-filter-btn {
+      font-size: 0.75rem;
+      padding: 6px 14px;
+    }
+
+    .home-why-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .home-why-card {
+      padding: 24px 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .home-game-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        padding: 0 8px;
+    }
+
+    .home-game-card-title {
+        font-size: 0.8rem;
+        padding: 8px 10px;
+    }
+
+    .home-game-card-logo-letter {
+        font-size: 2rem;
+    }
+
+    .home-game-card-badge {
+        font-size: 0.55rem;
+        padding: 2px 8px;
+    }
+
+    /* ----- new responsive: 480px ----- */
+    .home-hero-slide {
+      height: 280px;
+    }
+
+    .home-hero-title {
+      font-size: 1.4rem;
+      margin-bottom: 10px;
+    }
+
+    .home-hero-subtitle {
+      font-size: 0.85rem;
+      margin-bottom: 20px;
+    }
+
+    .home-hero-cta {
+      padding: 10px 24px;
+      font-size: 0.85rem;
+    }
+
+    .home-hero-carousel .carousel-control-prev-icon,
+    .home-hero-carousel .carousel-control-next-icon {
+      width: 36px;
+      height: 36px;
+    }
+
+    .home-trust-strip {
+      padding: 12px 12px;
+      gap: 6px 10px;
+      border-radius: 12px;
+    }
+
+    .home-trust-item {
+      font-size: 0.72rem;
+      padding: 3px 8px;
+    }
+
+    .home-trust-item i {
+      font-size: 0.9rem;
+    }
+
+    .home-trust-strip-divider {
+      height: 22px;
+    }
+
+    .home-trust-badge {
+      font-size: 0.72rem;
+      padding: 3px 12px;
+    }
+
+    .home-section-title {
+      font-size: 1.2rem;
+      margin-bottom: 16px;
+    }
+
+    .home-section-divider {
+      width: 40%;
+      margin: 24px auto;
+    }
+
+    .home-trending-card {
+      min-width: 160px;
+      width: 160px;
+    }
+
+    .home-trending-scroll {
+      gap: 10px;
+      padding-bottom: 16px;
+    }
+
+    .home-filter-bar {
+      padding: 8px 4px;
+      gap: 4px;
+    }
+
+    .home-filter-btn {
+      font-size: 0.7rem;
+      padding: 5px 10px;
+    }
+
+    .home-why-card {
+      padding: 20px 16px;
+      gap: 16px;
+    }
+
+    .home-why-item {
+      gap: 12px;
+    }
+
+    .home-why-item + .home-why-item {
+      padding-top: 16px;
+    }
+
+    .home-why-item-icon {
+      width: 40px;
+      height: 40px;
+    }
+
+    .home-why-item-icon i {
+      font-size: 1.1rem;
+    }
+
+    .home-why-item h4 {
+      font-size: 0.9rem;
+    }
+
+    .home-why-item p {
+      font-size: 0.8rem;
     }
 }
