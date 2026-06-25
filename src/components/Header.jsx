@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect, useRef } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import "../styles/Header.css";
 
 const Header = () => {
@@ -10,8 +10,45 @@ const Header = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [avatarKey, setAvatarKey] = useState(() => Date.now());
   const [games, setGames] = useState([]);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const closeDrawer = () => setDrawerOpen(false);
+  const drawerRef = useRef(null);
+  const togglerRef = useRef(null);
+
+  // Close drawer when route changes
+  useEffect(() => {
+    setDrawerOpen(false); // eslint-disable-line react-hooks/set-state-in-effect
+  }, [location]);
+
+  // Close drawer on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') closeDrawer();
+    };
+    if (drawerOpen) window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [drawerOpen]);
+
+  // Close drawer when clicking outside
+  useEffect(() => {
+    if (!drawerOpen) return;
+    const handleClickOutside = (e) => {
+      if (drawerRef.current && !drawerRef.current.contains(e.target) &&
+          togglerRef.current && !togglerRef.current.contains(e.target)) {
+        closeDrawer();
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, [drawerOpen]);
 
   useEffect(() => {
     fetch('/api/games')
@@ -25,7 +62,6 @@ const Header = () => {
   useEffect(() => {
     const loadUserData = () => {
       try {
-        // ⚡ Ganti localStorage ke sessionStorage
         const authToken = sessionStorage.getItem("authToken");
         const currentUser = sessionStorage.getItem("currentUser");
 
@@ -43,8 +79,6 @@ const Header = () => {
 
     loadUserData();
 
-    // ❌ Hapus listener 'storage' karena sessionStorage tidak men-support event ini
-    // Tetap pertahankan custom event untuk komunikasi antar komponen
     const handleUserLoggedIn = () => {
       console.log("User logged in event received");
       loadUserData();
@@ -60,9 +94,8 @@ const Header = () => {
       if (e.detail) {
         setUserData(e.detail);
       } else {
-        // Jika event tanpa detail, reload dari sessionStorage
         loadUserData();
-        setAvatarKey(Date.now()); // ⭐ trigger re-mount gambar
+        setAvatarKey(Date.now());
       }
     };
 
@@ -106,6 +139,7 @@ const Header = () => {
     setSearchTerm("");
     setShowDropdown(false);
     setErrorMessage("");
+    closeDrawer();
   };
 
   const handleSearchSubmit = (e) => {
@@ -120,62 +154,70 @@ const Header = () => {
     }
   };
 
-  // ⚡ Bantu fungsi untuk mendapatkan src avatar yang benar
   const getAvatarSrc = () => {
-  if (userData?.avatar) {
-    return userData.avatar; // sudah berupa endpoint seperti "/api/avatar/12345"
-  }
-  return "/asset/user.png";
-};
+    if (userData?.avatar) {
+      return userData.avatar;
+    }
+    return "/asset/user.png";
+  };
 
   return (
     <header>
-      <nav className="navbar navbar-expand-lg">
+      <nav className="navbar navbar-expand-lg custom-nav">
         <div className="container-fluid">
-          <img src="/asset/logo.png" alt="icon_game" width="120px" />
+          <Link to="/" onClick={closeDrawer}>
+            <img src="/asset/logo.png" alt="icon_game" width="120px" />
+          </Link>
           <button
-            className="navbar-toggler"
+            ref={togglerRef}
+            className="navbar-toggler custom-nav-toggler"
             type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent"
-            aria-expanded="false"
+            onClick={() => setDrawerOpen(prev => !prev)}
+            aria-controls="customNavDrawer"
+            aria-expanded={drawerOpen}
             aria-label="Toggle navigation"
           >
             <span className="navbar-toggler-icon"></span>
           </button>
 
-          <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+          <div
+            ref={drawerRef}
+            id="customNavDrawer"
+            className={`custom-nav-drawer ${drawerOpen ? 'custom-nav-drawer--open' : ''}`}
+          >
+            <div className="custom-nav-drawer-inner">
+            <ul className="navbar-nav me-auto mb-2 mb-lg-0 custom-nav-links">
               <li className="nav-item">
-                <Link className="nav-link active" aria-current="page" to="/">
+                <Link className="nav-link custom-nav-link" to="/" onClick={closeDrawer}>
                   Home
                 </Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link active" aria-current="page" to="/promo">
+                <Link className="nav-link custom-nav-link" to="/promo" onClick={closeDrawer}>
                   Promo
                 </Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link active" aria-current="page" to="/contact">
+                <Link className="nav-link custom-nav-link" to="/contact" onClick={closeDrawer}>
                   Contact
                 </Link>
               </li>
-              <li className="nav-item">
-                <Link className="nav-link active" aria-current="page" to="/login">
-                  Login
-                </Link>
-              </li>
+              {!userData && (
+                <li className="nav-item">
+                  <Link className="nav-link custom-nav-link" to="/login" onClick={closeDrawer}>
+                    Login
+                  </Link>
+                </li>
+              )}
             </ul>
 
             <form
-              className="d-flex position-relative"
+              className="d-flex position-relative custom-nav-search-wrap"
               role="search"
               onSubmit={handleSearchSubmit}
             >
               <input
-                className="form-control me-2"
+                className="form-control me-2 custom-nav-search"
                 type="search"
                 placeholder="Cari Game Anda"
                 value={searchTerm}
@@ -183,7 +225,7 @@ const Header = () => {
                 onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
               />
               <button
-                className="btn btn-outline-primary"
+                className="btn btn-outline-primary custom-nav-search-btn"
                 style={{ marginRight: "10px" }}
                 type="submit"
               >
@@ -191,15 +233,7 @@ const Header = () => {
               </button>
 
               {showDropdown && (
-                <div
-                  className="dropdown-menu show position-absolute w-100 mt-1 shadow-sm"
-                  style={{
-                    top: "100%",
-                    left: 0,
-                    zIndex: 1000,
-                    padding: "0.5rem 0",
-                  }}
-                >
+                <div className="custom-nav-search-dropdown">
                   {filteredPages.length > 0 ? (
                     filteredPages.map((game, index) => (
                       <button
@@ -233,36 +267,17 @@ const Header = () => {
               )}
 
               {errorMessage && (
-                <div
-                  className="position-absolute shadow"
-                  style={{
-                    top: "115%",
-                    left: 0,
-                    width: "calc(100% - 85px)",
-                    zIndex: 1050,
-                    background: "linear-gradient(135deg, #ff0055, #a100ff)",
-                    color: "white",
-                    padding: "10px 15px",
-                    borderRadius: "8px",
-                    fontSize: "0.85rem",
-                    fontWeight: "500",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                    boxShadow: "0 4px 15px rgba(255, 0, 85, 0.4)",
-                    transition: "all 0.3s ease-in-out",
-                  }}
-                >
+                <div className="custom-nav-error-toast">
                   <span style={{ fontSize: "1.2rem" }}>⚠️</span>
                   {errorMessage}
                 </div>
               )}
             </form>
 
-            <ul className="navbar-nav">
-              <li className="nav-item dropdown">
+            <ul className="navbar-nav custom-nav-profile-wrap">
+              <li className="nav-item dropdown custom-nav-profile-item">
                 <a
-                  className="nav-link dropdown-toggle"
+                  className="nav-link dropdown-toggle custom-nav-profile-pill"
                   href="#"
                   role="button"
                   data-bs-toggle="dropdown"
@@ -270,57 +285,43 @@ const Header = () => {
                 >
                   <img
                     key={avatarKey}
-                    src={getAvatarSrc()}  // ⚡ Gunakan fungsi pembantu
+                    src={getAvatarSrc()}
                     alt="profile"
-                    className="header-profile-icon"
+                    className={`header-profile-icon ${!userData ? 'custom-nav-guest-icon' : ''}`}
                     style={{
                       width: "30px",
                       height: "30px",
                       borderRadius: "50%",
                       objectFit: "cover",
                       marginRight: "8px",
-                      border: userData ? "2px solid #00f2ff" : "none",
+                      border: userData ? "2px solid #00f2ff" : "2px solid transparent",
                     }}
-                    onError={(e) => (e.target.src = "/asset/user.png")} // fallback jika error
+                    onError={(e) => (e.target.src = "/asset/user.png")}
                   />
                   <span
-                    style={{
-                      fontFamily: "'Orbitron', sans-serif",
-                      fontWeight: "500",
-                      color: userData ? "#00f2ff" : "#fff",
-                    }}
+                    className={userData ? 'custom-nav-username' : 'custom-nav-guest-text'}
                   >
                     {userData?.username || "GUEST"}
                   </span>
                   {userData && (
-                    <span
-                      style={{
-                        marginLeft: "8px",
-                        fontSize: "0.7rem",
-                        background: "linear-gradient(135deg, #7000ff, #a100ff)",
-                        color: "white",
-                        padding: "2px 6px",
-                        borderRadius: "10px",
-                        fontWeight: "bold",
-                      }}
-                    >
+                    <span className="custom-nav-level-pill">
                       Lvl {userData.level || 1}
                     </span>
                   )}
                 </a>
-                <ul className="dropdown-menu">
+                <ul className="dropdown-menu custom-nav-dropdown-menu">
                   <li>
-                    <Link className="dropdown-item" to="/profile">
+                    <Link className="dropdown-item" to="/profile" onClick={closeDrawer}>
                       View Profile
                     </Link>
                   </li>
                   <li>
-                    <Link className="dropdown-item" to="/history">
+                    <Link className="dropdown-item" to="/history" onClick={closeDrawer}>
                       History
                     </Link>
                   </li>
                   <li>
-                    <Link className="dropdown-item" to="/point">
+                    <Link className="dropdown-item" to="/point" onClick={closeDrawer}>
                       Point
                     </Link>
                   </li>
@@ -329,7 +330,7 @@ const Header = () => {
                   )}
                   {userData?.isAdmin && (
                     <li>
-                      <Link className="dropdown-item" to="/admin" style={{ color: '#6366f1', fontWeight: 600 }}>
+                      <Link className="dropdown-item" to="/admin" onClick={closeDrawer} style={{ color: '#6366f1', fontWeight: 600 }}>
                         ◆ Admin Panel
                       </Link>
                     </li>
@@ -337,6 +338,7 @@ const Header = () => {
                 </ul>
               </li>
             </ul>
+            </div>
           </div>
         </div>
       </nav>

@@ -313,6 +313,11 @@ html {
 }
 
 /* Dark-themed carousel controls */
+.home-hero-carousel .carousel-control-prev,
+.home-hero-carousel .carousel-control-next {
+  z-index: 10;
+}
+
 .home-hero-carousel .carousel-control-prev-icon,
 .home-hero-carousel .carousel-control-next-icon {
   width: 48px;

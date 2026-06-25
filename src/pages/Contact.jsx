@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import '../styles/Contact.css';
-import '../styles/Animations.css';
 
 const Contact = () => {
   const [showAlert, setShowAlert] = useState(false);

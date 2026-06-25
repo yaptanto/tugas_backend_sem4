@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Footer from '../components/Footer';
 import '../styles/Reset.css';
-import '../styles/Animations.css';
 
 const Reset = () => {
   const [formData, setFormData] = useState({
@@ -85,14 +84,7 @@ const Reset = () => {
 
   return (
     <>
-      <div className="anim-logo-fall-container">
-        <img src="/asset/logo_game/coc.png" alt="logo" className="anim-falling-logo" />
-        <img src="/asset/logo_game/mlbb.png" alt="logo" className="anim-falling-logo" />
-        <img src="/asset/logo_game/valorant.png" alt="logo" className="anim-falling-logo" />
-        <img src="/asset/logo_game/roblox.png" alt="logo" className="anim-falling-logo" />
-      </div>
-
-      <main className='reset-main'>
+<main className='reset-main'>
         <div className="reset-container">
           <h2>Reset Password</h2>
 

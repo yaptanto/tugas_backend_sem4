@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../utils/api.js';
 import '../styles/Profile.css';
-import '../styles/Animations.css';
 
 const Profile = () => {
   const [userData, setUserData] = useState(null);
@@ -484,23 +483,7 @@ const Profile = () => {
 
   return (
     <>
-      {/* Background Animation */}
-      <div className="anim-logo-fall-container">
-        <img src="/asset/logo_game/coc.png" alt="logo" className="anim-falling-logo" />
-        <img src="/asset/logo_game/mlbb.png" alt="logo" className="anim-falling-logo" />
-        <img src="/asset/logo_game/valorant.png" alt="logo" className="anim-falling-logo" />
-        <img src="/asset/logo_game/roblox.png" alt="logo" className="anim-falling-logo" />
-        <img src="/asset/logo_game/coc.png" alt="logo" className="anim-falling-logo" />
-        <img src="/asset/logo_game/mlbb.png" alt="logo" className="anim-falling-logo" />
-        <img src="/asset/logo_game/valorant.png" alt="logo" className="anim-falling-logo" />
-        <img src="/asset/logo_game/roblox.png" alt="logo" className="anim-falling-logo" />
-        <img src="/asset/logo_game/coc.png" alt="logo" className="anim-falling-logo" />
-        <img src="/asset/logo_game/mlbb.png" alt="logo" className="anim-falling-logo" />
-        <img src="/asset/logo_game/valorant.png" alt="logo" className="anim-falling-logo" />
-        <img src="/asset/logo_game/roblox.png" alt="logo" className="anim-falling-logo" />
-      </div>
-
-      {/* PROFILE */}
+{/* PROFILE */}
       <main className="profile-main">
         <section className="profile-container">
           

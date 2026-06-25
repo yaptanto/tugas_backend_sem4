@@ -5,22 +5,7 @@ import '../styles/PelajariLebih.css';
 const PelajariLebih = () => {
   return (
     <>
-      <div className="pelajari-anim-logo-fall-container">
-        <img src="/asset/logo_game/coc.png" alt="logo" className="pelajari-anim-falling-logo" />
-        <img src="/asset/logo_game/mlbb.png" alt="logo" className="pelajari-anim-falling-logo" />
-        <img src="/asset/logo_game/valorant.png" alt="logo" className="pelajari-anim-falling-logo" />
-        <img src="/asset/logo_game/roblox.png" alt="logo" className="pelajari-anim-falling-logo" />
-        <img src="/asset/logo_game/coc.png" alt="logo" className="pelajari-anim-falling-logo" />
-        <img src="/asset/logo_game/mlbb.png" alt="logo" className="pelajari-anim-falling-logo" />
-        <img src="/asset/logo_game/valorant.png" alt="logo" className="pelajari-anim-falling-logo" />
-        <img src="/asset/logo_game/roblox.png" alt="logo" className="pelajari-anim-falling-logo" />
-        <img src="/asset/logo_game/coc.png" alt="logo" className="pelajari-anim-falling-logo" />
-        <img src="/asset/logo_game/mlbb.png" alt="logo" className="pelajari-anim-falling-logo" />
-        <img src="/asset/logo_game/valorant.png" alt="logo" className="pelajari-anim-falling-logo" />
-        <img src="/asset/logo_game/roblox.png" alt="logo" className="pelajari-anim-falling-logo" />
-      </div>
-
-      <main className="pelajari-main">
+<main className="pelajari-main">
         <div className="pelajari-container">
           <div className="pelajari-logo">
             <img src="/asset/logo.png" alt="icon_game" width="120px" />

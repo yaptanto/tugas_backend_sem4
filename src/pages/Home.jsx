@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/Home.css';
-import '../styles/Animations.css';
 
 /* ── simple in-memory fetch cache (5 min TTL) ─── */
 const cache = {};

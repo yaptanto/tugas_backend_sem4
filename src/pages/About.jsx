@@ -1,24 +1,8 @@
 import React from 'react';
 import '../styles/About.css';
-import '../styles/Animations.css';
-
 const About = () => {
   return (
     <>
-      <div className="anim-logo-fall-container">
-        <img src="/asset/logo_game/coc.png" alt="logo" className="anim-falling-logo" />
-        <img src="/asset/logo_game/mlbb.png" alt="logo" className="anim-falling-logo" />
-        <img src="/asset/logo_game/valorant.png" alt="logo" className="anim-falling-logo" />
-        <img src="/asset/logo_game/roblox.png" alt="logo" className="anim-falling-logo" />
-        <img src="/asset/logo_game/coc.png" alt="logo" className="anim-falling-logo" />
-        <img src="/asset/logo_game/mlbb.png" alt="logo" className="anim-falling-logo" />
-        <img src="/asset/logo_game/valorant.png" alt="logo" className="anim-falling-logo" />
-        <img src="/asset/logo_game/roblox.png" alt="logo" className="anim-falling-logo" />
-        <img src="/asset/logo_game/coc.png" alt="logo" className="anim-falling-logo" />
-        <img src="/asset/logo_game/mlbb.png" alt="logo" className="anim-falling-logo" />
-        <img src="/asset/logo_game/valorant.png" alt="logo" className="anim-falling-logo" />
-        <img src="/asset/logo_game/roblox.png" alt="logo" className="anim-falling-logo" />
-      </div>
 
       <main className="about-main">
         <div className="about-container">

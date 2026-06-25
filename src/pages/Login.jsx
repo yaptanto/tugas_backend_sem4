@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Footer from '../components/Footer';
 import '../styles/Login.css';
-import '../styles/Animations.css';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -178,22 +177,7 @@ const Login = () => {
 
   return (
     <>
-      <div className="anim-logo-fall-container">
-        <img src="/asset/logo_game/coc.png" alt="logo" className="anim-falling-logo" />
-        <img src="/asset/logo_game/mlbb.png" alt="logo" className="anim-falling-logo" />
-        <img src="/asset/logo_game/valorant.png" alt="logo" className="anim-falling-logo" />
-        <img src="/asset/logo_game/roblox.png" alt="logo" className="anim-falling-logo" />
-        <img src="/asset/logo_game/coc.png" alt="logo" className="anim-falling-logo" />
-        <img src="/asset/logo_game/mlbb.png" alt="logo" className="anim-falling-logo" />
-        <img src="/asset/logo_game/valorant.png" alt="logo" className="anim-falling-logo" />
-        <img src="/asset/logo_game/roblox.png" alt="logo" className="anim-falling-logo" />
-        <img src="/asset/logo_game/coc.png" alt="logo" className="anim-falling-logo" />
-        <img src="/asset/logo_game/mlbb.png" alt="logo" className="anim-falling-logo" />
-        <img src="/asset/logo_game/valorant.png" alt="logo" className="anim-falling-logo" />
-        <img src="/asset/logo_game/roblox.png" alt="logo" className="anim-falling-logo" />
-      </div>
-
-      <main className="login-main">
+<main className="login-main">
         <div className="login-container">
           <h2>Login</h2>
           

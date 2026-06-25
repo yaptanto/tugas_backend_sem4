@@ -1,6 +1,13 @@
+/* =============================================
+   HEADER — Premium Cyber-Gamer Navbar
+   ============================================= */
+
 header {
-    position: relative;
+    position: sticky;
+    top: 0;
     z-index: 3;
+    align-self: flex-start;
+    width: 100%;
 }
 
 header img {
@@ -8,17 +15,257 @@ header img {
     margin-right: 20px;
 }
 
-/* Glass effect — gradient background shows through */
-.navbar {
+/* ─── Glassmorphism Navbar ──────────────────── */
+
+.navbar.custom-nav {
+    position: relative;
     display: flex;
     justify-content: space-between;
     box-shadow: 0px 10px 20px 0px rgba(0, 0, 0, 0.2);
     padding-inline: 1rem;
     padding-block: 1rem;
-    background-color: rgba(42, 42, 62, 0.75) !important;
+    background-color: rgba(20, 20, 30, 0.98) !important;
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
+
+/* Gradient overlay for depth */
+.navbar.custom-nav::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(180deg, rgba(42, 42, 62, 0.9), rgba(42, 42, 62, 0.6));
+    pointer-events: none;
+}
+
+/* ─── Nav Links — Audiowide ─────────────────── */
+
+.custom-nav-links {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.custom-nav-link {
+    font-family: 'Audiowide', sans-serif !important;
+    font-size: 14px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.1em !important;
+    color: #f0f0f0 !important;
+    text-decoration: none !important;
+    position: relative;
+    padding: 8px 14px !important;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+.custom-nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    width: 60%;
+    height: 2px;
+    background: #00aaff;
+    transform: translateX(-50%) scaleX(0);
+    transform-origin: center;
+    transition: transform 0.3s ease;
+    border-radius: 2px;
+    box-shadow: 0 0 6px rgba(0, 170, 255, 0.6);
+}
+
+.custom-nav-link:hover,
+.custom-nav-link:focus-visible {
+    color: #ffffff !important;
+    text-shadow: 0 0 8px rgba(0, 170, 255, 0.6);
+}
+
+.custom-nav-link:hover::after,
+.custom-nav-link:focus-visible::after {
+    transform: translateX(-50%) scaleX(1);
+}
+
+/* ─── Search Bar ────────────────────────────── */
+
+.custom-nav-search-wrap {
+    display: flex;
+    align-items: center;
+}
+
+.custom-nav-search {
+    background: rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: #f0f0f0 !important;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: 0.9rem;
+}
+
+.custom-nav-search::placeholder {
+    color: #8899aa;
+    opacity: 0.8;
+}
+
+.custom-nav-search:focus {
+    border-color: #00aaff !important;
+    box-shadow: 0 0 12px rgba(0, 170, 255, 0.3) !important;
+    outline: none;
+}
+
+.custom-nav-search-btn {
+    border-color: rgba(0, 170, 255, 0.3) !important;
+    color: #00aaff !important;
+    font-size: 0.85rem !important;
+    padding: 6px 16px !important;
+    transition: all 0.3s ease;
+    border-radius: 6px;
+}
+
+.custom-nav-search-btn:hover {
+    background: rgba(0, 170, 255, 0.15) !important;
+    border-color: #00aaff !important;
+    box-shadow: 0 0 10px rgba(0, 170, 255, 0.25);
+}
+
+/* Search dropdown (glass) */
+.custom-nav-search-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: calc(100% - 85px);
+    z-index: 1000;
+    background: rgba(20, 20, 30, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 0.5rem 0;
+    margin-top: 4px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    animation: customNavDropdownIn 0.2s ease forwards;
+}
+
+@keyframes customNavDropdownIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Error toast */
+.custom-nav-error-toast {
+    position: absolute;
+    top: 115%;
+    left: 0;
+    width: calc(100% - 85px);
+    z-index: 1050;
+    background: linear-gradient(135deg, #ff0055, #a100ff);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 15px rgba(255, 0, 85, 0.4);
+    animation: customNavDropdownIn 0.2s ease forwards;
+}
+
+/* ─── User Profile — "Player Card" ──────────── */
+
+.custom-nav-profile-wrap {
+    display: flex;
+    align-items: center;
+}
+
+.custom-nav-profile-item {
+    list-style: none;
+}
+
+.custom-nav-profile-pill {
+    display: flex !important;
+    align-items: center;
+    gap: 2px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 25px;
+    padding: 4px 12px !important;
+    transition: background 0.3s ease;
+    color: #fff !important;
+}
+
+.custom-nav-profile-pill:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* Username — logged in */
+.custom-nav-username {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 500;
+    font-size: 0.85rem;
+    color: #00f2ff;
+    text-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
+    transition: text-shadow 0.3s ease;
+}
+
+/* Guest state */
+.custom-nav-guest-text {
+    font-family: 'Audiowide', sans-serif;
+    font-weight: 500;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    color: #fff;
+    opacity: 0.5;
+}
+
+.custom-nav-guest-icon {
+    animation: customNavGuestPulse 2s ease-in-out infinite;
+}
+
+@keyframes customNavGuestPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+/* Level pill */
+.custom-nav-level-pill {
+    margin-left: 8px;
+    font-size: 0.7rem;
+    background: linear-gradient(135deg, #7000ff, #a100ff);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: bold;
+    box-shadow: 0 2px 8px rgba(112, 0, 255, 0.4);
+}
+
+/* Dropdown menu animation */
+.custom-nav-dropdown-menu {
+    background-color: #2a2a3e;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    animation: customNavDropdownFade 0.25s ease forwards;
+    margin-top: 4px !important;
+}
+
+@keyframes customNavDropdownFade {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ─── Shared ────────────────────────────────── */
 
 .navbar .nav-link {
     color: #f0f0f0 !important;
@@ -27,19 +274,6 @@ header img {
 .navbar .nav-link:hover,
 .navbar .nav-link.active {
     color: #ffffff !important;
-}
-
-.navbar .dropdown-toggle {
-    color: #f0f0f0 !important;
-}
-
-.navbar .dropdown-toggle:hover {
-    color: #00aaff !important;
-}
-
-.dropdown-menu {
-    background-color: #2a2a3e;
-    border: 1px solid #444;
 }
 
 .dropdown-item {
@@ -56,64 +290,153 @@ header img {
     height: 30px;
     border-radius: 50%;
     object-fit: cover;
-    margin: 0px 5px 0px 5px;
+    margin-right: 8px;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.header-profile-icon:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
 }
 
 .nav-item {
     list-style: none;
 }
 
-.navbar-toggler {
-    background-color: rgb(79, 79, 114);
+/* ─── Hamburger Toggler — White ──────────────── */
+
+.custom-nav-toggler {
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    padding: 6px 10px;
+    transition: border-color 0.3s ease;
 }
 
-li > a {
-    font-family: 'Courier New', Courier, monospace !important;
-    text-decoration: none;
-    color: #f0f0f0;
-    transition: color 0.2s ease-in-out;
+.custom-nav-toggler:hover {
+    border-color: #ffffff !important;
 }
 
-li > a:hover {
-    color: #00aaff;
+.custom-nav-toggler .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255,255,255,0.9)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
 }
 
-/* Header.css */
-.header-profile-icon {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-right: 8px;
-  border: 2px solid transparent;
-  transition: all 0.3s ease;
+/* ─── Right-to-Left Drawer (mobile) ─────────── */
+
+.custom-nav-drawer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-grow: 1;
 }
 
-.header-profile-icon:hover {
-  transform: scale(1.1);
-  box-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+.custom-nav-drawer-inner {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-grow: 1;
+    width: 100%;
 }
 
-.nav-link.dropdown-toggle {
-  display: flex;
-  align-items: center;
-  color: #fff !important;
+
+/* ─── Mobile Drawer (below lg breakpoint) ───── */
+
+@media (max-width: 991.98px) {
+    /* Drawer — off-screen right */
+    .custom-nav-drawer {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: min(280px, 80vw);
+        height: 100vh;
+        background: transparent;
+        border-left: 1px solid rgba(0, 170, 255, 0.3);
+        box-shadow: -5px 0 25px rgba(0, 0, 0, 0.5);
+        transform: translateX(100%);
+        transition: transform 0.15s ease-in-out;
+        z-index: 1050;
+        flex-direction: column;
+        align-items: stretch;
+        overflow-y: auto;
+        display: flex;
+    }
+
+    .custom-nav-drawer-inner {
+        flex-direction: column;
+        align-items: stretch;
+        background: rgba(20, 20, 30, 0.98);
+        min-height: 100vh;
+        padding: 80px 20px 20px;
+    }
+
+    .custom-nav-drawer--open {
+        transform: translateX(0);
+    }
+
+    /* Stack drawer content vertically */
+    .custom-nav-drawer .custom-nav-links {
+        flex-direction: column;
+        align-items: stretch;
+        margin-bottom: 1.5rem !important;
+    }
+
+    .custom-nav-drawer .custom-nav-link {
+        padding: 12px 16px !important;
+        font-size: 13px !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .custom-nav-drawer .custom-nav-search-wrap {
+        flex-direction: column;
+        width: 100%;
+        margin-bottom: 1.5rem;
+    }
+
+    .custom-nav-drawer .custom-nav-search {
+        width: 100%;
+        margin-right: 0 !important;
+        margin-bottom: 8px;
+    }
+
+    .custom-nav-drawer .custom-nav-search-btn {
+        width: 100%;
+        margin-right: 0 !important;
+    }
+
+    .custom-nav-drawer .custom-nav-search-dropdown {
+        width: 100%;
+        position: relative;
+        top: auto;
+        left: auto;
+        margin-top: 0;
+    }
+
+    .custom-nav-drawer .custom-nav-error-toast {
+        width: 100%;
+        position: relative;
+        top: auto;
+        left: auto;
+        margin-top: 8px;
+    }
+
+    .custom-nav-drawer .custom-nav-profile-wrap {
+        width: 100%;
+    }
+
+    .custom-nav-drawer .custom-nav-profile-item {
+        width: 100%;
+    }
+
+    .custom-nav-drawer .custom-nav-profile-pill {
+        width: 100%;
+        justify-content: center;
+        border-radius: 12px;
+        padding: 10px 16px !important;
+    }
 }
 
-/* Untuk highlight username yang login */
-.user-logged-in {
-  color: #00f2ff !important;
-  text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
-}
+/* ─── Bootstrap dropdown positioning fix ────── */
 
-/* Responsive */
-@media (max-width: 768px) {
-  .nav-link.dropdown-toggle {
-    justify-content: center;
-    padding: 10px 0;
-  }
-  
-  .header-profile-icon {
-    margin-right: 5px;
-  }
+.dropdown-menu {
+    background-color: #2a2a3e;
+    border: 1px solid #444;
 }

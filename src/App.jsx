@@ -19,7 +19,6 @@ import Reset from './pages/Reset';
 import Summary from './pages/Summary';
 import Voucher from './pages/Voucher';
 import Admin from './pages/Admin';
-import './styles/Animations.css'
 import './App.css';
 import { PointProvider } from "./components/PointContext";
 import { TransactionProvider } from './components/TransactionContext';
@@ -63,21 +62,7 @@ function App() {
     <PointProvider>
       <TransactionProvider>
         <BrowserRouter>
-          <div className="anim-logo-fall-container">
-            <img src="/asset/logo_game/coc.png" alt="logo" className="anim-falling-logo" />
-            <img src="/asset/logo_game/mlbb.png" alt="logo" className="anim-falling-logo" />
-            <img src="/asset/logo_game/valorant.png" alt="logo" className="anim-falling-logo" />
-            <img src="/asset/logo_game/roblox.png" alt="logo" className="anim-falling-logo" />
-            <img src="/asset/logo_game/coc.png" alt="logo" className="anim-falling-logo" />
-            <img src="/asset/logo_game/mlbb.png" alt="logo" className="anim-falling-logo" />
-            <img src="/asset/logo_game/valorant.png" alt="logo" className="anim-falling-logo" />
-            <img src="/asset/logo_game/roblox.png" alt="logo" className="anim-falling-logo" />
-            <img src="/asset/logo_game/coc.png" alt="logo" className="anim-falling-logo" />
-            <img src="/asset/logo_game/mlbb.png" alt="logo" className="anim-falling-logo" />
-            <img src="/asset/logo_game/valorant.png" alt="logo" className="anim-falling-logo" />
-            <img src="/asset/logo_game/roblox.png" alt="logo" className="anim-falling-logo" />
-          </div>
-          <AppLayout />
+<AppLayout />
         </BrowserRouter>
       </TransactionProvider>
     </PointProvider>
