@@ -1,30 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import '../styles/Contact.css';
 
 const Contact = () => {
   const [alertData, setAlertData] = useState(null);
-  const [formData, setFormData] = useState({ nama: '', email: '', pesan: '' });
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
+  const [isLoggedIn] = useState(() => {
     const token = sessionStorage.getItem('authToken');
     const stored = sessionStorage.getItem('currentUser');
-    if (token && stored) {
-      setIsLoggedIn(true);
+    return !!(token && stored);
+  });
+
+  const [formData, setFormData] = useState(() => {
+    const stored = sessionStorage.getItem('currentUser');
+    let username = '';
+    let email = '';
+    if (stored) {
       try {
         const u = JSON.parse(stored);
-        setFormData(p => ({
-          ...p,
-          nama: u.username || '',
-          email: u.email || ''
-        }));
+        username = u.username || '';
+        email = u.email || '';
       } catch (err) {
         console.error('Error parsing stored user details:', err);
       }
-    } else {
-      setIsLoggedIn(false);
     }
-  }, []);
+    return { nama: username, email: email, pesan: '' };
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -66,6 +65,7 @@ const Contact = () => {
         });
       }
     } catch (err) {
+      console.error('Contact submission error:', err);
       setAlertData({
         type: 'error',
         title: 'Koneksi Error',
