@@ -151,6 +151,20 @@ model vouchers {
 }
 
 // ==========================================
+// 6. VOUCHER REDEMPTIONS
+// Tracks per-user voucher redemption (one-time use per user)
+// ==========================================
+model voucher_redemptions {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  voucherId String   @db.ObjectId
+  code      String   // Denormalized for easy reference
+  createdAt DateTime @default(now())
+
+  @@index([userId, voucherId])
+}
+
+// ==========================================
 // 7. CAROUSEL SLIDES
 // For dynamic hero carousel content management
 // ==========================================

@@ -1,5 +1,7 @@
 .toast-container {
     animation: notif 1s ease forwards;
+    z-index: 9999 !important;
+    top: 70px !important;
 }
 
 .toast {

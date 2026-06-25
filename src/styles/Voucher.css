@@ -1,69 +1,195 @@
+/* =============================================================
+   VOUCHER — Cyber-Gamer Theme (RAST-7 Brand)
+   Redeem Station: glass card, neon ticket icon, gradient CTA
+   ============================================================= */
 
-
-/* --- Bagian Konten Redeem --- */
+/* ─── Main Layout ─── */
 .redeem-section {
-    padding-top: 60px;
-    padding-bottom: 60px;
+  position: relative;
+  z-index: 2;
+  padding-top: 60px;
+  padding-bottom: 100px;
+  min-height: 100vh;
+  background: transparent;
 }
 
+/* ─── Page Heading ─── */
+.redeem-section .page-heading {
+  font-family: 'Audiowide', sans-serif;
+  font-size: 2rem;
+  color: #fff;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 1.5rem;
+  text-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
+}
+
+/* ─── Redeem Card ─── */
 .redeem-box {
-    background-color: #2a2a3e; 
-    padding: 2.5rem;
-    border-radius: 12px;
-    max-width: 450px;
-    margin: 0 auto;
-    border: 1px solid #40405a; 
-    box-shadow: none; 
-    color: #E0E0E0;
+  background: rgba(30, 30, 54, 0.45);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 242, 255, 0.12);
+  border-radius: 16px;
+  padding: 2.8rem 2.5rem;
+  max-width: 450px;
+  margin: 0 auto;
+  color: #e2e8f0;
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.45), 0 0 25px rgba(0, 242, 255, 0.05);
+  text-align: center;
 }
 
+/* ─── Ticket Icon ─── */
 .redeem-icon {
-    font-size: 3rem;
-    color: #ADB5BD;
+  font-size: 3rem;
+  color: #00f2ff;
+  filter: drop-shadow(0 0 12px rgba(0, 242, 255, 0.4));
+  margin-bottom: 1rem;
 }
 
+.redeem-box > p {
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.55);
+  margin-bottom: 1.5rem;
+}
+
+/* ─── Input ─── */
 .redeem-box .form-control {
-    background-color: #40405a; 
-    border: 1px solid #5a5a7a; 
-    color: #FFFFFF;
-    border-radius: 8px;
-    padding: 0.9rem 1rem;
-    text-align: center; 
-    font-weight: 500;
+  background: rgba(15, 15, 30, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #e2e8f0;
+  border-radius: 8px;
+  padding: 0.9rem 1rem;
+  text-align: center;
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  transition: all 0.3s ease;
 }
 
 .redeem-box .form-control::placeholder {
-    color: #ADB5BD; 
-    font-weight: 500;
+  color: rgba(255, 255, 255, 0.25);
+  font-weight: 400;
+  letter-spacing: 0.05em;
 }
 
+.redeem-box .form-control:focus {
+  border-color: #00f2ff;
+  outline: none;
+  box-shadow: 0 0 14px rgba(0, 242, 255, 0.35);
+  background: rgba(15, 15, 30, 0.85);
+}
+
+/* ─── Privacy Text ─── */
 .privacy-text {
-    color: #ADB5BD;
-    font-size: 0.8rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.3);
+  line-height: 1.5;
 }
+
 .privacy-text a {
-    color: #FFFFFF; 
-    text-decoration: none;
-    font-weight: 600;
+  color: #00f2ff;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s ease;
 }
+
 .privacy-text a:hover {
-    text-decoration: underline;
+  text-shadow: 0 0 8px rgba(0, 242, 255, 0.5);
+  text-decoration: underline;
 }
 
-
+/* ─── Redeem Button ─── */
 .voucher-btn-redeem {
-    background-color: #FFFFFF; 
-    border: none;
-    border-radius: 8px;
-    padding: 0.9rem 1rem;
-    font-weight: 700;
-    font-size: 1rem;
-    color: #2a2a3e; 
+  background: linear-gradient(135deg, #00f2ff, #007bff) !important;
+  border: none !important;
+  border-radius: 8px;
+  padding: 0.9rem 1rem;
+  font-family: 'Audiowide', sans-serif !important;
+  font-size: 0.9rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff !important;
+  box-shadow: 0 0 18px rgba(0, 242, 255, 0.2) !important;
+  transition: all 0.3s ease !important;
 }
-.voucher-btn-redeem:hover {
-    background-color: #E9ECEF;
-    color: #2a2a3e;
+
+.voucher-btn-redeem:hover:not(:disabled) {
+  box-shadow: 0 0 30px rgba(0, 242, 255, 0.4) !important;
+  transform: translateY(-2px);
 }
 
+.voucher-btn-redeem:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 
+/* ─── Responsive ─── */
+@media (max-width: 768px) {
+  .redeem-section {
+    padding-top: 40px;
+    padding-inline: 3%;
+  }
 
+  .redeem-section .page-heading {
+    font-size: 1.5rem;
+  }
+
+  .redeem-box {
+    padding: 2rem 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .redeem-box {
+    padding: 1.5rem 1.2rem;
+  }
+
+  .redeem-section .page-heading {
+    font-size: 1.2rem;
+  }
+}
+
+/* ─── Auth Buttons inside Redeem Card ─── */
+.redeem-box .auth-btn {
+  display: inline-block;
+  padding: 0.65rem 2rem;
+  border-radius: 8px;
+  font-family: 'Audiowide', sans-serif;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-weight: 700;
+}
+
+.redeem-box .login-btn {
+  background: linear-gradient(135deg, #00f2ff, #007bff);
+  color: #fff;
+  box-shadow: 0 0 18px rgba(0, 242, 255, 0.2);
+}
+
+.redeem-box .login-btn:hover {
+  box-shadow: 0 0 30px rgba(0, 242, 255, 0.4);
+  transform: translateY(-2px);
+  color: #fff;
+}
+
+.redeem-box .register-btn {
+  background: transparent;
+  color: #00f2ff;
+  border: 1px solid rgba(0, 242, 255, 0.4);
+}
+
+.redeem-box .register-btn:hover {
+  background: rgba(0, 242, 255, 0.08);
+  border-color: #00f2ff;
+  transform: translateY(-2px);
+  color: #00f2ff;
+}

@@ -70,8 +70,25 @@ class TransactionService extends BaseService {
     if (!voucher || !voucher.isActive) {
       throw new Error("Kode voucher tidak valid atau sudah tidak aktif.");
     }
+    if (voucher.validUntil && new Date(voucher.validUntil) < new Date()) {
+      throw new Error("Kode voucher sudah kedaluwarsa.");
+    }
     if (voucher.usedCount >= voucher.quota) {
       throw new Error("Kuota voucher sudah habis.");
+    }
+
+    // Cek apakah user sudah pernah redeem voucher ini (kecuali admin)
+    const user = await this.prisma.users.findUnique({ where: { id: userId } });
+    if (!user) {
+      throw new Error("User tidak ditemukan.");
+    }
+    if (!user.isAdmin) {
+      const existing = await this.prisma.voucher_redemptions.findFirst({
+        where: { userId, voucherId: voucher.id }
+      });
+      if (existing) {
+        throw new Error("Kode voucher sudah pernah digunakan.");
+      }
     }
 
     // Update poin user & voucher dalam satu transaksi atomik
@@ -83,6 +100,9 @@ class TransactionService extends BaseService {
       this.prisma.vouchers.update({
         where: { id: voucher.id },
         data: { usedCount: { increment: 1 } }
+      }),
+      this.prisma.voucher_redemptions.create({
+        data: { userId, voucherId: voucher.id, code: voucher.code }
       })
     ]);
 

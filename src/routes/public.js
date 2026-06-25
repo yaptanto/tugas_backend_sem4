@@ -459,4 +459,41 @@ router.post('/contact', authenticate, async (req, res) => {
   }
 });
 
+/**
+ * @openapi
+ * /api/vouchers/active:
+ *   get:
+ *     summary: Get active vouchers with available quota
+ *     tags: [Public]
+ *     responses:
+ *       200:
+ *         description: List of active vouchers
+ */
+router.get('/vouchers/active', async (req, res) => {
+  try {
+    const vouchers = await req.prisma.vouchers.findMany({
+      where: { isActive: true },
+      select: {
+        code: true,
+        rewardValue: true,
+        rewardType: true,
+        usedCount: true,
+        quota: true,
+        validUntil: true
+      }
+    });
+
+    // Filter: only vouchers with remaining quota and not expired
+    const now = new Date();
+    const available = vouchers.filter(v =>
+      v.usedCount < v.quota &&
+      (!v.validUntil || new Date(v.validUntil) > now)
+    );
+
+    res.json({ success: true, data: available });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 export default router;

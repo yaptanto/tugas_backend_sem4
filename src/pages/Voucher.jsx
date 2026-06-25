@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { PointContext } from "../components/PointContext";
 import Notification from "../components/Notification";
 import Header from "../components/Header";
@@ -10,27 +10,33 @@ import "../styles/Voucher.css";
 const Voucher = () => {
   const [inputCode, setInputCode] = useState("");
   const [notif, setNotif] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { addPoints } = useContext(PointContext);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // 1. Munculkan notifikasi pertama segera setelah halaman dimuat
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setNotif({
-      msg: "Kode redeem 2026 (2500 poin) = SUKSES77",
-      id: Date.now()
-    });
+    const authToken = sessionStorage.getItem('authToken');
+    setIsLoggedIn(!!authToken);
 
-    // 2. Tunggu 4 detik (3 detik durasi notif 1 + 1 detik jeda) baru munculkan yang kedua
-    const timer = setTimeout(() => {
-      setNotif({ 
-        msg: "Kode redeem 2026 (5000 poin) = GACOR88", 
-        id: Date.now() + 1 // ID berbeda agar React merender ulang komponen
-      });
-    }, 4000);
+    let timer;
 
-    // Bersihkan timer jika user pindah halaman sebelum notif kedua muncul
-    return () => clearTimeout(timer);
+    api.get('/api/vouchers/active')
+      .then(res => res.json())
+      .then(result => {
+        if (!result.success || !result.data?.length) return;
+
+        result.data.forEach((v, i) => {
+          timer = setTimeout(() => {
+            setNotif({
+              msg: `Kode ${v.code} = ${v.rewardValue} poin`,
+              id: Date.now() + i
+            });
+          }, i * 3000);
+        });
+      })
+      .catch(() => {});
+
+    return () => { if (timer) clearTimeout(timer); };
   }, []);
 
   const handleRedeem = async (e) => {
@@ -70,40 +76,58 @@ const Voucher = () => {
         {notif && <Notification key={notif.id} msg={notif.msg} />}
 
         <div className="container text-center">
-          <h1 className="h2 mb-4 text-light">Redeem Code</h1>
+          <h1 className="page-heading">Redeem Code</h1>
 
-          <div className="redeem-box">
-            <div className="redeem-icon mb-3">
-              <i className="bi bi-ticket-perforated"></i>
-            </div>
-
-            <p className="mb-3 fs-5">Enter your voucher code</p>
-
-            <form onSubmit={handleRedeem}>
-              <div className="mb-3">
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="XXXX-XXXX-XXXX-XXXX"
-                  value={inputCode}
-                  onChange={(e) => setInputCode(e.target.value.toUpperCase())}
-                  required
-                />
+          {isLoggedIn ? (
+            <div className="redeem-box">
+              <div className="redeem-icon mb-3">
+                <i className="bi bi-ticket-perforated"></i>
               </div>
 
-              <p className="privacy-text mb-3">
-                By clicking "Redeem Code", you agree to our
-                <a href="#"> Privacy Policy</a>.
-              </p>
+              <p className="mb-3 fs-5">Enter your voucher code</p>
 
-              <button
-                type="submit"
-                className="btn btn-primary voucher-btn-redeem w-100"
-              >
-                Redeem Code
-              </button>
-            </form>
-          </div>
+              <form onSubmit={handleRedeem}>
+                <div className="mb-3">
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="XXXX-XXXX-XXXX-XXXX"
+                    value={inputCode}
+                    onChange={(e) => setInputCode(e.target.value.toUpperCase())}
+                    required
+                  />
+                </div>
+
+                <p className="privacy-text mb-3">
+                  By clicking "Redeem Code", you agree to our
+                  <a href="#"> Privacy Policy</a>.
+                </p>
+
+                <button
+                  type="submit"
+                  className="btn btn-primary voucher-btn-redeem w-100"
+                >
+                  Redeem Code
+                </button>
+              </form>
+            </div>
+          ) : (
+            <div className="redeem-box">
+              <div className="redeem-icon mb-3">
+                <i className="bi bi-lock-fill"></i>
+              </div>
+              <h3 className="mb-3" style={{ fontFamily: 'Audiowide, sans-serif', color: '#fff' }}>
+                Login Required
+              </h3>
+              <p style={{ color: 'rgba(255,255,255,0.55)', fontFamily: 'Inter, sans-serif', marginBottom: '1.5rem' }}>
+                You must be logged in to redeem voucher codes.
+              </p>
+              <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                <Link to="/login" className="auth-btn login-btn">Login</Link>
+                <Link to="/register" className="auth-btn register-btn">Register</Link>
+              </div>
+            </div>
+          )}
         </div>
       </main>
     </>
