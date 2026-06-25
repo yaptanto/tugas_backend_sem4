@@ -52,7 +52,7 @@ const avatarUpload = multer({
  *       401: { description: Unauthorized }
  *       403: { description: Forbidden - not your avatar }
  */
-router.post('/upload-avatar', ensureSelf, avatarUpload.single('avatar'), async (req, res) => {
+router.post('/upload-avatar', avatarUpload.single('avatar'), ensureSelf, async (req, res) => {
   try {
     const { userId } = req.body;
 
@@ -70,35 +70,6 @@ router.post('/upload-avatar', ensureSelf, avatarUpload.single('avatar'), async (
   }
 });
 
-/**
- * @openapi
- * /api/avatar/{userId}:
- *   get:
- *     summary: Get user avatar (public)
- *     tags: [User]
- *     parameters:
- *       - in: path
- *         name: userId
- *         required: true
- *         schema: { type: string }
- *     responses:
- *       200: { description: Avatar image, content: image/jpeg }
- *       404: { description: Default avatar served if none exists }
- */
-router.get('/avatar/:userId', async (req, res) => {
-  try {
-    const user = await req.userService.getAvatar(req.params.userId);
-
-    if (!user || !user.avatar) {
-      return res.sendFile('asset/profile.png', { root: '.' });
-    }
-
-    res.set('Content-Type', 'image/jpeg');
-    res.send(user.avatar);
-  } catch (err) {
-    req.userService.handleError(res, err, "Gagal mengambil avatar");
-  }
-});
 
 /**
  * @openapi

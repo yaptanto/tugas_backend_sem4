@@ -496,4 +496,43 @@ router.get('/vouchers/active', async (req, res) => {
   }
 });
 
+/**
+ * @openapi
+ * /api/avatar/{userId}:
+ *   get:
+ *     summary: Get user avatar (public)
+ *     tags: [Public]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200: { description: Avatar image }
+ *       404: { description: Default avatar served if none exists }
+ */
+router.get('/avatar/:userId', async (req, res) => {
+  try {
+    const user = await req.userService.getAvatar(req.params.userId);
+
+    if (!user || !user.avatar) {
+      return res.sendFile('asset/profile.png', { root: '.' });
+    }
+
+    const buffer = Buffer.isBuffer(user.avatar) ? user.avatar : Buffer.from(user.avatar);
+    const sig = buffer.slice(0, 4).toString('hex');
+    const mime = sig.startsWith('8950') ? 'image/png'
+      : sig.startsWith('ffd8') ? 'image/jpeg'
+      : sig.startsWith('4746') ? 'image/gif'
+      : sig.startsWith('5249') ? 'image/webp'
+      : 'image/jpeg';
+
+    res.set('Content-Type', mime);
+    res.set('Cache-Control', 'no-cache, must-revalidate');
+    res.send(buffer);
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Gagal mengambil avatar" });
+  }
+});
+
 export default router;
