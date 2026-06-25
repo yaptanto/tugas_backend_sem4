@@ -88,7 +88,7 @@ const History = () => {
                     <td>{trx.waktu}</td>
                     <td>{trx.invoiceId}</td>
                     <td>{trx.gameName} {trx.itemName}</td>
-                    <td>Rp {trx.totalPaid?.toLocaleString('id-ID')}</td>
+                    <td>Rp {trx.basePrice?.toLocaleString('id-ID')}</td>
                     <td>
                       <span className={`status-badge ${trx.status === 'SUCCESS' ? 'status-success' : 'status-failed'}`}>
                         {trx.status || "PENDING"}

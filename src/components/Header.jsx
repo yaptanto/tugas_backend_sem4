@@ -330,7 +330,7 @@ const Header = () => {
                   )}
                   {userData?.isAdmin && (
                     <li>
-                      <Link className="dropdown-item" to="/admin" onClick={closeDrawer} style={{ color: '#6366f1', fontWeight: 600 }}>
+                      <Link className="dropdown-item admin-link" to="/admin" onClick={closeDrawer}>
                         ◆ Admin Panel
                       </Link>
                     </li>

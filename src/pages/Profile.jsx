@@ -636,7 +636,7 @@ const Profile = () => {
                     <>
                       <div className="progress mb-2" style={{ height: '25px' }}>
                         <div
-                          className="progress-bar progress-bar-striped progress-bar-animated"
+                          className="progress-bar"
                           role="progressbar"
                           style={{ width: `${mileage.progress}%` }}
                           aria-valuenow={mileage.progress}

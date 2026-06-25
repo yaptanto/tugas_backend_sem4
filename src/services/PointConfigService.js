@@ -67,9 +67,7 @@ class PointConfigService extends BaseService {
       let amountNeeded = 0;
 
       if (nextConfig) {
-        const tierRange = nextConfig.minSpent - currentConfig.minSpent;
-        const spentInTier = totalSpent - currentConfig.minSpent;
-        progress = Math.min(100, Math.floor((spentInTier / tierRange) * 100));
+        progress = Math.min(100, Math.floor((totalSpent / nextConfig.minSpent) * 100));
         amountNeeded = Math.max(0, nextConfig.minSpent - totalSpent);
       } else {
         progress = 100; // Max tier reached
