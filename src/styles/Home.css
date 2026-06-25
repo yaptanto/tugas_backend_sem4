@@ -433,7 +433,7 @@ html {
   width: 60%;
   max-width: 360px;
   height: 2px;
-  margin: 40px auto;
+  margin: 56px auto;
   background: linear-gradient(
     90deg,
     transparent,
@@ -451,6 +451,10 @@ html {
 /* ============================================
    4.  SECTION TITLES
    ============================================ */
+
+.home-index-container section {
+  padding-top: 8px;
+}
 
 .home-section-title {
   font-family: 'Audiowide', sans-serif;
@@ -772,7 +776,7 @@ html {
 
     .home-section-divider {
       width: 50%;
-      margin: 32px auto;
+      margin: 44px auto;
     }
 
     .home-trending-card {
@@ -876,7 +880,7 @@ html {
 
     .home-section-divider {
       width: 40%;
-      margin: 24px auto;
+      margin: 32px auto;
     }
 
     .home-trending-card {

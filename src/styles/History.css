@@ -1,83 +1,244 @@
-.history-main {
-    background-color: rgba(26, 26, 46,.8);
+/* =============================================================
+   HISTORY — Cyber-Gamer Theme (RAST-7 Brand)
+   Preserves original layout, applies themed styling
+   ============================================================= */
 
+/* ─── Main Layout ─── */
+.history-main {
+  position: relative;
+  z-index: 2;
+  padding-top: 1px;
+  padding-inline: 3%;
+  padding-bottom: 100px;
+  min-height: 100vh;
+  background: transparent;
 }
 
+/* ─── Search / Lacak Section ─── */
 .history-lacak {
-    width: 100%;
-    padding: 2rem 3rem;
-    box-shadow: 0px 5px 20px rgba(255, 255, 255, .2);
-    background-color: rgba(26, 26, 46);
-
+  width: 100%;
+  padding: 2rem 3rem;
+  background: rgba(30, 30, 54, 0.45);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 242, 255, 0.12);
+  border-radius: 16px;
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.45), 0 0 25px rgba(0, 242, 255, 0.05);
 }
 
 .history-lacak h1 {
-    margin: 0;
-    margin-bottom: 1rem;
+  font-family: 'Audiowide', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 400;
+  color: #fff;
+  margin: 0 0 1.25rem;
+  letter-spacing: 0.03em;
+  text-shadow: 0 0 18px rgba(0, 242, 255, 0.35);
 }
 
 .history-lacak .history-input-wrap {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .history-lacak .history-input-wrap label {
-    margin-bottom: .5rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 .history-lacak .history-input-wrap input {
-    width: 50%;
-    border-radius: 5px;
-    border: none;
-    outline: none;
-    padding: .5rem 1rem;
+  width: 50%;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  outline: none;
+  padding: 0.75rem 1.25rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  background: rgba(10, 10, 30, 0.35);
+  color: #e2e8f0;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.history-lacak svg{
-    width: 1rem;
-    margin-right: .3rem;
-    fill: whitesmoke;
+.history-lacak .history-input-wrap input::placeholder {
+  color: rgba(255, 255, 255, 0.25);
 }
 
-.history-lacak button {
-    border: none;
-    border-radius: 8px;
-    background-color: rgba(255, 255, 255, 0.3);
-    padding: .5rem 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 1rem;
-    cursor: pointer;
-    font-weight: bold;
-    color: whitesmoke;
+.history-lacak .history-input-wrap input:focus {
+  border-color: rgba(0, 242, 255, 0.4);
+  box-shadow: 0 0 16px rgba(0, 242, 255, 0.1);
 }
 
+/* ─── History Section ─── */
 .history-section {
-    margin-inline: 15%;
-    margin-top: 3rem;
-    margin-bottom: 3rem;
+  margin-inline: 15%;
+  margin-top: 3rem;
+  margin-bottom: 3rem;
 }
 
+.history-section h2 {
+  font-family: 'Audiowide', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 400;
+  color: #fff;
+  margin: 0 0 0.5rem;
+  letter-spacing: 0.03em;
+  text-shadow: 0 0 18px rgba(0, 242, 255, 0.25);
+}
+
+.history-section > p {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0 0 1.5rem;
+}
+
+/* ─── Table ─── */
 .history-table-container {
-    overflow-x: auto;
+  overflow-x: auto;
 }
 
 .history-table-container table {
+  width: 100%;
+  border-radius: 16px;
+  border-spacing: 0;
+  border: 1px solid rgba(0, 242, 255, 0.12);
+  overflow: hidden;
+  font-family: 'Inter', sans-serif;
+  background: rgba(30, 30, 54, 0.45);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.45), 0 0 25px rgba(0, 242, 255, 0.05);
+}
+
+.history-table-container thead th {
+  padding: 1rem 1.25rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-align: left;
+  border-bottom: 1px solid rgba(0, 242, 255, 0.15);
+  background: rgba(10, 10, 30, 0.2);
+}
+
+.history-table-container td {
+  padding: 1rem 1.25rem;
+  font-size: 0.9rem;
+  color: #e2e8f0;
+  vertical-align: middle;
+}
+
+.history-table-container th,
+.history-table-container td {
+  border: 1px solid rgba(0, 242, 255, 0.06);
+  padding: 1rem;
+}
+
+.history-table-container thead th {
+  border-bottom: 1px solid rgba(0, 242, 255, 0.15);
+}
+
+.history-table-container tbody tr {
+  transition: background 0.2s ease;
+}
+
+.history-table-container tbody tr:hover {
+  background: rgba(0, 242, 255, 0.03);
+}
+
+/* ─── Status Badges ─── */
+.status-badge {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.status-success {
+  background: rgba(0, 242, 255, 0.12);
+  color: #00f2ff;
+  border: 1px solid rgba(0, 242, 255, 0.2);
+  box-shadow: 0 0 10px rgba(0, 242, 255, 0.15);
+}
+
+.status-failed {
+  background: rgba(255, 0, 85, 0.12);
+  color: #ff0055;
+  border: 1px solid rgba(255, 0, 85, 0.2);
+  box-shadow: 0 0 10px rgba(255, 0, 85, 0.15);
+}
+
+/* ─── Empty State ─── */
+.history-table-container td[colspan] {
+  color: rgba(255, 255, 255, 0.35) !important;
+  font-style: italic;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 768px) {
+  .history-lacak {
+    padding: 1.5rem 1.5rem;
+  }
+
+  .history-lacak h1 {
+    font-size: 1.1rem;
+  }
+
+  .history-lacak .history-input-wrap input {
     width: 100%;
-    border-radius: 16px;
-    border-spacing: 0;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .history-section {
+    margin-inline: 5%;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .history-section h2 {
+    font-size: 1.1rem;
+  }
+
+  .history-table-container thead th,
+  .history-table-container td {
+    padding: 0.75rem 1rem;
+    font-size: 0.82rem;
+  }
 }
 
-.history-table-container table .history-stat-suc {
-    padding: .4rem;
-    background-color: rgba(255, 255, 255, 0.3);
-    width: fit-content;
-    border-radius: 5px;
-}
+@media (max-width: 480px) {
+  .history-main {
+    padding-inline: 2%;
+  }
 
-.history-table-container th, .history-table-container td {
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    padding: 1rem;
+  .history-lacak {
+    padding: 1.25rem 1rem;
+  }
+
+  .history-lacak h1 {
+    font-size: 1rem;
+  }
+
+  .history-section {
+    margin-inline: 2%;
+  }
+
+  .history-table-container thead th,
+  .history-table-container td {
+    padding: 0.6rem 0.75rem;
+    font-size: 0.75rem;
+  }
+
+  .status-badge {
+    padding: 3px 10px;
+    font-size: 0.65rem;
+  }
 }

@@ -1,105 +1,240 @@
+/* =============================================================
+   SUMMARY — Cyber-Gamer Theme (RAST-7 Brand)
+   Success header + glass receipt card
+   ============================================================= */
 
-
-/*
- * CSS Khusus untuk Halaman Sukses Pembayaran
- */
-
-
+/* ─── Success Header ─── */
 .success-header {
-    margin-top: 1rem;
-    background-color: #F0F8F0;
-    padding: 3rem 0;
-    text-align: center;
-    border-bottom: 1px solid #E0E0E0;
-    border-radius: 2rem;
+  position: relative;
+  z-index: 2;
+  margin-top: 2rem;
+  padding: 3rem 2rem;
+  background: rgba(30, 30, 54, 0.45);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 242, 255, 0.12);
+  border-radius: 24px;
+  text-align: center;
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.45), 0 0 25px rgba(0, 242, 255, 0.05);
 }
 
 .success-icon {
-    font-size: 4.5rem;
-    color: #28a745;
-    line-height: 1;
+  font-size: 4.5rem;
+  color: #00f2ff;
+  line-height: 1;
+  filter: drop-shadow(0 0 20px rgba(0, 242, 255, 0.5));
 }
 
 .success-header h1 {
-    font-weight: 700;
-    color: #000;
-    margin-bottom: 0.25rem;
+  font-family: 'Audiowide', sans-serif;
+  font-size: 2rem;
+  font-weight: 400;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 1rem 0 0.5rem;
+  text-shadow: 0 0 25px rgba(0, 242, 255, 0.35);
 }
 
 .success-header .lead {
-    color: #555;
-    font-size: 1.1rem;
-    margin-bottom: 0;
+  font-family: 'Inter', sans-serif;
+  font-size: 1.05rem;
+  color: rgba(255, 255, 255, 0.55);
+  margin-bottom: 0;
 }
 
-/* Bagian Konten Rincian di Bawah */
+/* ─── Receipt Section ─── */
 .receipt-section {
-    padding: 40px 0 60px 0;
+  position: relative;
+  z-index: 2;
+  padding: 40px 3% 100px;
+  background: transparent;
+  min-height: 50vh;
 }
 
-/* Kartu Rincian */
+/* ─── Glass Receipt Card ─── */
 .receipt-card {
-    background-color: #2a2a3e;
-    border: 1px solid #40405a;
-    border-radius: 12px;
-    box-shadow: none;
-    color: #E0E0E0;
+  background: rgba(30, 30, 54, 0.45);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 242, 255, 0.12);
+  border-radius: 16px;
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.45), 0 0 25px rgba(0, 242, 255, 0.05);
+  color: #e2e8f0;
+  overflow: hidden;
 }
 
 .receipt-card-header {
-    padding: 1.25rem 1.5rem;
-    border-bottom: 1px solid #40405a;
-    font-weight: 700;
-    font-size: 1.2rem;
-    color: #FFFFFF;
+  padding: 1.25rem 1.75rem;
+  border-bottom: 1px solid rgba(0, 242, 255, 0.08);
+  font-family: 'Audiowide', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: #fff;
+  letter-spacing: 0.04em;
+  text-shadow: 0 0 12px rgba(0, 242, 255, 0.2);
 }
 
 .receipt-card-body {
-    padding: 1.5rem;
+  padding: 1.5rem 1.75rem;
 }
 
-/* Judul sub-kategori (DETAIL PEMBELIAN) */
+/* ─── Subtitle (DETAIL PEMBELIAN / DETAIL PEMBAYARAN) ─── */
 .receipt-subtitle {
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: #ADB5BD;
-    letter-spacing: 0.5px;
-    margin-bottom: 0.5rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
 }
 
-/* --- Detail Rincian (List) --- */
+/* ─── Receipt Details List ─── */
 .receipt-details .list-group-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.85rem 0;
-    border-bottom: 1px solid #40405a !important;
-    background-color: transparent;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+  background-color: transparent;
+  font-family: 'Inter', sans-serif;
 }
 
 .receipt-details .list-group-item:last-child {
-    border-bottom: none !important;
+  border-bottom: none !important;
 }
 
 .receipt-details .list-group-item span {
-    color: #ADB5BD;
-    font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.95rem;
 }
 
 .receipt-details .list-group-item strong {
-    color: #E0E0E0;
-    font-weight: 600;
-    font-size: 0.95rem;
-    text-align: right;
+  color: #e2e8f0;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-align: right;
+}
+
+/* ─── Discount row ─── */
+.receipt-details .list-group-item.text-success {
+  color: #00f2ff !important;
+}
+
+.receipt-details .list-group-item.text-success span {
+  color: #00f2ff !important;
+}
+
+.receipt-details .list-group-item.text-success strong {
+  color: #00f2ff !important;
+}
+
+/* ─── Total row ─── */
+.receipt-details .list-group-item.payment-total {
+  border-top: 1px solid rgba(0, 242, 255, 0.1) !important;
+  padding-top: 1rem;
+  margin-top: 0.25rem;
 }
 
 .receipt-details .list-group-item.payment-total span {
-    font-weight: 700;
-    color: #FFFFFF;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .receipt-details .list-group-item.payment-total strong {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #ff0055;
+  text-shadow: 0 0 15px rgba(255, 0, 85, 0.3);
+}
+
+/* ─── Back to Home Button ─── */
+.receipt-section .btn-outline-info {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 12px 32px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 242, 255, 0.3);
+  color: #00f2ff;
+  background: rgba(0, 242, 255, 0.06);
+  transition: all 0.25s ease;
+}
+
+.receipt-section .btn-outline-info:hover {
+  background: linear-gradient(135deg, #00f2ff, #0088cc);
+  border-color: transparent;
+  color: #0a0a1e;
+  box-shadow: 0 0 20px rgba(0, 242, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.receipt-section .btn-outline-info i {
+  margin-right: 4px;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 768px) {
+  .success-header {
+    padding: 2rem 1.5rem;
+    margin-top: 1.5rem;
+  }
+
+  .success-icon {
+    font-size: 3.5rem;
+  }
+
+  .success-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .success-header .lead {
+    font-size: 0.95rem;
+  }
+
+  .receipt-card-header {
+    padding: 1rem 1.25rem;
+    font-size: 1rem;
+  }
+
+  .receipt-card-body {
+    padding: 1.25rem;
+  }
+
+  .receipt-details .list-group-item.payment-total strong {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .success-header {
+    padding: 1.5rem 1rem;
+    border-radius: 16px;
+  }
+
+  .success-icon {
+    font-size: 2.5rem;
+  }
+
+  .success-header h1 {
     font-size: 1.2rem;
-    font-weight: 700;
-    color: #FFFFFF;
+  }
+
+  .receipt-section {
+    padding: 24px 2% 80px;
+  }
+
+  .receipt-card-body {
+    padding: 1rem;
+  }
+
+  .receipt-details .list-group-item {
+    padding: 0.7rem 0;
+    font-size: 0.85rem;
+  }
+
+  .receipt-details .list-group-item.payment-total strong {
+    font-size: 1rem;
+  }
 }
