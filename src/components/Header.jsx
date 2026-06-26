@@ -19,6 +19,16 @@ const Header = () => {
   const drawerRef = useRef(null);
   const togglerRef = useRef(null);
 
+  // Lock body scroll when drawer is open on mobile
+  useEffect(() => {
+    if (drawerOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [drawerOpen]);
+
   // Close drawer when route changes
   useEffect(() => {
     setDrawerOpen(false); // eslint-disable-line react-hooks/set-state-in-effect
@@ -170,7 +180,7 @@ const Header = () => {
           </Link>
           <button
             ref={togglerRef}
-            className="navbar-toggler custom-nav-toggler"
+            className={`navbar-toggler custom-nav-toggler ${drawerOpen ? 'custom-nav-toggler--open' : ''}`}
             type="button"
             onClick={() => setDrawerOpen(prev => !prev)}
             aria-controls="customNavDrawer"
@@ -179,6 +189,13 @@ const Header = () => {
           >
             <span className="navbar-toggler-icon"></span>
           </button>
+
+          {/* Backdrop overlay when drawer is open */}
+          <div
+            className={`custom-nav-backdrop ${drawerOpen ? 'custom-nav-backdrop--visible' : ''}`}
+            onClick={closeDrawer}
+            aria-hidden="true"
+          />
 
           <div
             ref={drawerRef}
