@@ -349,20 +349,31 @@ header img {
     list-style: none;
 }
 
-/* ─── Hamburger Toggler — White ──────────────── */
+/* ─── Hamburger Toggler — Bright White ────────── */
 
 .custom-nav-toggler {
-    border: 1px solid rgba(255, 255, 255, 0.3) !important;
-    padding: 6px 10px;
-    transition: border-color 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    padding: 8px 12px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    z-index: 1060;
+    position: relative;
 }
 
-.custom-nav-toggler:hover {
+.custom-nav-toggler:hover,
+.custom-nav-toggler:focus-visible {
     border-color: #ffffff !important;
+    box-shadow: 0 0 10px rgba(0, 170, 255, 0.3);
 }
 
 .custom-nav-toggler .navbar-toggler-icon {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255,255,255,0.9)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+    width: 1.6em;
+    height: 1.6em;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255,255,255,0.95)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2.5' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+}
+
+/* X icon when drawer is open */
+.custom-nav-toggler--open .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255,255,255,0.95)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2.5' d='M7 7l16 16M7 23l16-16'/%3e%3c/svg%3e") !important;
 }
 
 /* ─── Right-to-Left Drawer (mobile) ─────────── */
@@ -409,7 +420,6 @@ header img {
         flex-direction: column;
         align-items: stretch;
         background: rgba(20, 20, 30, 0.98);
-        min-height: 100vh;
         padding: 80px 20px 20px;
     }
 
@@ -481,6 +491,24 @@ header img {
         justify-content: center;
         border-radius: 12px;
         padding: 10px 16px !important;
+    }
+
+    /* ─── Backdrop overlay ────────────────────────── */
+    .custom-nav-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 1049;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(2px);
+        -webkit-backdrop-filter: blur(2px);
+        opacity: 0;
+        transition: opacity 0.15s ease-in-out;
+        pointer-events: none;
+    }
+
+    .custom-nav-backdrop--visible {
+        opacity: 1;
+        pointer-events: auto;
     }
 }
 

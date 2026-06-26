@@ -170,7 +170,7 @@ const Header = () => {
           </Link>
           <button
             ref={togglerRef}
-            className="navbar-toggler custom-nav-toggler"
+            className={`navbar-toggler custom-nav-toggler ${drawerOpen ? 'custom-nav-toggler--open' : ''}`}
             type="button"
             onClick={() => setDrawerOpen(prev => !prev)}
             aria-controls="customNavDrawer"
@@ -179,6 +179,13 @@ const Header = () => {
           >
             <span className="navbar-toggler-icon"></span>
           </button>
+
+          {/* Backdrop overlay when drawer is open */}
+          <div
+            className={`custom-nav-backdrop ${drawerOpen ? 'custom-nav-backdrop--visible' : ''}`}
+            onClick={closeDrawer}
+            aria-hidden="true"
+          />
 
           <div
             ref={drawerRef}
