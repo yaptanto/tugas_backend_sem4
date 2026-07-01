@@ -1,25 +1,25 @@
 import nodemailer from 'nodemailer';
-import dns from 'dns';
-import net from 'net';
-
-const IPV4_CACHE_TTL_MS = 10 * 60 * 1000; // 10 menit
 
 class EmailService {
   constructor() {
     this.envMode = this.detectEnvironment();
 
-    this.smtpHost = process.env.SMTP_HOST;
-    this.smtpPort = Number(process.env.SMTP_PORT);
+    this.transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: Number(process.env.SMTP_PORT),
+      secure: false,
+      family: 4,
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    });
 
     this.fromEmail = process.env.SMTP_USER;
     this.frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
 
-    // Cache hasil resolve IPv4, supaya tidak resolve DNS di setiap kirim email
-    this._resolvedIp = null;
-    this._resolvedAt = 0;
-
     console.log(`\n📧 EmailService initialized (mode: ${this.envMode})`);
-    console.log(`📧 SMTP: ${this.smtpHost}:${this.smtpPort}`);
+    console.log(`📧 SMTP: ${process.env.SMTP_HOST}:${process.env.SMTP_PORT}`);
     console.log(`📧 Frontend URL: ${this.frontendUrl}\n`);
 
     // Test SMTP connection at startup (non-blocking, async)
@@ -46,80 +46,6 @@ class EmailService {
 
   isProduction() {
     return this.envMode.startsWith('production');
-  }
-
-  /**
-   * Resolve SMTP_HOST ke alamat IPv4 secara manual.
-   *
-   * KENAPA INI PERLU:
-   * nodemailer (v7+) me-resolve hostname ke IPv4 DAN IPv6 sekaligus, lalu
-   * memilih salah satu SECARA RANDOM untuk konek. Opsi `family: 4` di
-   * createTransport() TIDAK dibaca sama sekali oleh SMTP transport, jadi
-   * tidak ada efeknya.
-   *
-   * Di Railway, container biasanya tidak punya outbound route ke IPv6,
-   * jadi begitu nodemailer random-pick alamat IPv6 Gmail, koneksinya
-   * gagal dengan ENETUNREACH — persis seperti yang muncul di log.
-   *
-   * Solusinya: resolve ke IPv4 duluan pakai dns.resolve4(), lalu kirim
-   * hasilnya (IP literal) sebagai `host` ke nodemailer. Kalau host yang
-   * dikasih sudah berupa IP, nodemailer tidak akan resolve ulang / pilih
-   * random lagi — otomatis selalu pakai IPv4.
-   */
-  async resolveSmtpHost() {
-    const now = Date.now();
-
-    // Kalau host sudah IP literal, tidak perlu resolve
-    if (net.isIP(this.smtpHost)) {
-      return this.smtpHost;
-    }
-
-    if (this._resolvedIp && now - this._resolvedAt < IPV4_CACHE_TTL_MS) {
-      return this._resolvedIp;
-    }
-
-    try {
-      const addresses = await new Promise((resolve, reject) => {
-        dns.resolve4(this.smtpHost, (err, addrs) => {
-          if (err || !addrs || !addrs.length) {
-            return reject(err || new Error('Tidak ada A record (IPv4) ditemukan'));
-          }
-          resolve(addrs);
-        });
-      });
-
-      this._resolvedIp = addresses[0];
-      this._resolvedAt = now;
-      console.log(`📧 Resolved ${this.smtpHost} -> ${this._resolvedIp} (IPv4, dipaksa)`);
-      return this._resolvedIp;
-    } catch (err) {
-      console.warn(`⚠️ Gagal resolve IPv4 untuk ${this.smtpHost}: ${err.message}`);
-      console.warn('⚠️ Fallback ke hostname asli (bisa saja tetap kena masalah IPv6 di Railway).');
-      return this.smtpHost;
-    }
-  }
-
-  /**
-   * Buat transporter baru dengan host yang sudah dipastikan IPv4.
-   * `tls.servername` tetap diisi hostname asli supaya validasi
-   * sertifikat SSL/TLS Gmail tidak gagal (karena kita connect via IP).
-   */
-  async getTransporter() {
-    const connectHost = await this.resolveSmtpHost();
-
-    return nodemailer.createTransport({
-      host: connectHost,
-      port: this.smtpPort,
-      secure: false,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-      tls: {
-        servername: this.smtpHost,
-      },
-      connectionTimeout: 15000,
-    });
   }
 
   /**
@@ -180,8 +106,7 @@ class EmailService {
     console.log(`🔐 Link: ${resetLink}\n`);
 
     try {
-      const transporter = await this.getTransporter();
-      const info = await transporter.sendMail(mailOptions);
+      const info = await this.transporter.sendMail(mailOptions);
       console.log(`✅ Email terkirim ke ${to}: ${info.messageId}`);
       return true;
     } catch (error) {
@@ -203,8 +128,7 @@ class EmailService {
    */
   async verifyConnection() {
     try {
-      const transporter = await this.getTransporter();
-      await transporter.verify();
+      await this.transporter.verify();
       return true;
     } catch (error) {
       console.error('SMTP connection failed:', error.message);
