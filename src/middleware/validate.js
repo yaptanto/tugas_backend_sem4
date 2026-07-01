@@ -26,4 +26,5 @@ export const validateBody = (requiredFields) => {
  */
 export const validateRegister = validateBody(['email', 'username', 'password']);
 export const validateLogin = validateBody(['username', 'password']);
+export const validateResetPassword = validateBody(['emailOrUsername', 'newPassword', 'confirmPassword']);
 export const validateTransaction = validateBody(['userId', 'targetAccount', 'purchaseDetails', 'billing']);

@@ -1,6 +1,5 @@
 import BaseService from './BaseService.js';
 import bcrypt from 'bcrypt';
-import crypto from 'crypto';
 import { generateToken } from '../middleware/auth.js';
 
 class UserService extends BaseService {
@@ -150,86 +149,27 @@ class UserService extends BaseService {
     return user.points;
   }
 
-  async requestPasswordReset(email) {
-    if (!email) {
-      throw new Error("Email wajib diisi");
-    }
-
-    const user = await this.prisma.users.findUnique({
-      where: { email }
-    });
-
-    // Jangan kasih tahu attacker apakah email terdaftar atau tidak
-    if (!user) {
-      return { message: "Jika email terdaftar, link reset password akan dikirim" };
-    }
-
-    // Cegah spam — check apakah sudah ada token yang belum expired
-    if (user.resetTokenExpiry && new Date(user.resetTokenExpiry) > new Date()) {
-      const cooldown = Math.ceil(
-        (new Date(user.resetTokenExpiry).getTime() - Date.now()) / 1000 / 60
-      );
-      throw new Error(
-        `Tunggu ${cooldown} menit sebelum meminta reset password lagi`
-      );
-    }
-
-    // Generate secure random token
-    const resetToken = crypto.randomBytes(32).toString('hex');
-
-    // Token berlaku 15 menit
-    const resetTokenExpiry = new Date(Date.now() + 15 * 60 * 1000);
-
-    // Simpan ke database
-    await this.prisma.users.update({
-      where: { id: user.id },
-      data: { resetToken, resetTokenExpiry }
-    });
-
-    return { resetToken, email: user.email };
-  }
-
-  async confirmPasswordReset(token, newPassword) {
-    if (!token || !newPassword) {
-      throw new Error("Token dan password baru wajib diisi");
+  async resetPassword(emailOrUsername, newPassword) {
+    if (!emailOrUsername || !newPassword) {
+      throw new Error("Email/Username dan password baru wajib diisi");
     }
     if (newPassword.length < 6) {
       throw new Error("Password minimal 6 karakter");
     }
 
-    // Cari user dengan token ini
     const user = await this.prisma.users.findFirst({
-      where: { resetToken: token }
+      where: { OR: [{ email: emailOrUsername }, { username: emailOrUsername }] }
     });
 
-    if (!user) {
-      throw new Error("Token reset password tidak valid");
-    }
+    if (!user) throw new Error("Email/Username tidak ditemukan");
 
-    // Cek expiry
-    if (!user.resetTokenExpiry || new Date(user.resetTokenExpiry) < new Date()) {
-      // Bersihkan token yang expired
-      await this.prisma.users.update({
-        where: { id: user.id },
-        data: { resetToken: null, resetTokenExpiry: null }
-      });
-      throw new Error("Token reset password sudah kedaluwarsa. Silakan minta ulang.");
-    }
-
-    // Hash password baru
+    // Hash new password before updating
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    // Update password dan hapus token (single-use)
-    await this.prisma.users.update({
+    return await this.prisma.users.update({
       where: { id: user.id },
-      data: {
-        password: hashedPassword,
-        resetToken: null,
-        resetTokenExpiry: null
-      }
+      data: { password: hashedPassword }
     });
-
-    return { message: "Password berhasil direset" };
   }
 
   async deleteUser(userId) {

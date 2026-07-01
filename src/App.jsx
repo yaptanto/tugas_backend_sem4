@@ -16,7 +16,6 @@ import Point from './pages/Point';
 import Profile from './pages/Profile';
 import Register from './pages/Register';
 import Reset from './pages/Reset';
-import ResetConfirm from './pages/ResetConfirm';
 import Summary from './pages/Summary';
 import Voucher from './pages/Voucher';
 import Admin from './pages/Admin';
@@ -48,7 +47,6 @@ function AppLayout() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/register" element={<Register />} />
         <Route path="/reset" element={<Reset />} />
-        <Route path="/reset-password/:token" element={<ResetConfirm />} />
         <Route path="/summary" element={<Summary />} />
         <Route path="/voucher" element={<Voucher />} />
         <Route path="/admin" element={<Admin />} />

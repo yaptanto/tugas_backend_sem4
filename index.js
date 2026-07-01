@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import { prisma } from './lib/prisma';
-import { UserService, TransactionService, PointConfigService, EmailService } from './src/services/index.js';
+import { UserService, TransactionService, PointConfigService } from './src/services/index.js';
 import { requestLogger } from './src/middleware/logger.js';
 import { handleMulterError } from './src/middleware/upload.js';
 
@@ -30,7 +30,6 @@ app.use('/api-docs', swaggerUiMiddleware, swaggerUiSetup);
 const userService = new UserService(prisma);
 const pointConfigService = new PointConfigService(prisma);
 const transactionService = new TransactionService(prisma, pointConfigService);
-const emailService = new EmailService();
 
 app.use(express.json());
 
@@ -39,7 +38,6 @@ app.use((req, res, next) => {
   req.userService = userService;
   req.transactionService = transactionService;
   req.pointConfigService = pointConfigService;
-  req.emailService = emailService;
   req.prisma = prisma;
   next();
 });
