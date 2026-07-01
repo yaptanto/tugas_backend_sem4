@@ -104,7 +104,10 @@ router.post('/forgot-password', async (req, res) => {
     // Kirim email
     try {
       const emailSent = await req.emailService.sendResetEmail(result.email, result.resetToken);
-      if (!emailSent && process.env.NODE_ENV !== 'production') {
+      const isProduction = process.env.NODE_ENV === 'production' ||
+                           process.env.RAILWAY_ENVIRONMENT ||
+                           process.env.RAILWAY_SERVICE_NAME;
+      if (!emailSent && !isProduction) {
         console.log('⚠️ [DEV] Lanjut tanpa email — token tersedia di log server.');
       }
     } catch (emailErr) {

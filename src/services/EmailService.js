@@ -2,6 +2,8 @@ import nodemailer from 'nodemailer';
 
 class EmailService {
   constructor() {
+    this.envMode = this.detectEnvironment();
+
     this.transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       port: Number(process.env.SMTP_PORT),
@@ -14,6 +16,35 @@ class EmailService {
 
     this.fromEmail = process.env.SMTP_USER;
     this.frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+
+    console.log(`\n📧 EmailService initialized (mode: ${this.envMode})`);
+    console.log(`📧 SMTP: ${process.env.SMTP_HOST}:${process.env.SMTP_PORT}`);
+    console.log(`📧 Frontend URL: ${this.frontendUrl}\n`);
+
+    // Test SMTP connection at startup (non-blocking, async)
+    this.verifyConnection().then(ok => {
+      if (ok) {
+        console.log('✅ SMTP connection verified successfully');
+      } else {
+        console.warn('⚠️ SMTP connection FAILED — password reset emails will not work.');
+        console.warn('⚠️ Check SMTP_HOST, SMTP_PORT, SMTP_USER, and SMTP_PASS variables.');
+      }
+    });
+  }
+
+  /**
+   * Detect apakah environment production atau development.
+   * Railway tidak otomatis set NODE_ENV, jadi kita deteksi dari env var Railway.
+   */
+  detectEnvironment() {
+    if (process.env.NODE_ENV === 'production') return 'production';
+    if (process.env.RAILWAY_ENVIRONMENT) return 'production (Railway)';
+    if (process.env.RAILWAY_SERVICE_NAME) return 'production (Railway)';
+    return 'development';
+  }
+
+  isProduction() {
+    return this.envMode.startsWith('production');
   }
 
   /**
@@ -70,11 +101,8 @@ class EmailService {
       `,
     };
 
-    // Untuk development: log token di console
-    if (process.env.NODE_ENV !== 'production') {
-      console.log(`\n🔐 [DEV] Reset token untuk ${to}: ${token}`);
-      console.log(`🔐 [DEV] Link: ${resetLink}\n`);
-    }
+    console.log(`\n🔐 Reset token untuk ${to}: ${token}`);
+    console.log(`🔐 Link: ${resetLink}\n`);
 
     try {
       const info = await this.transporter.sendMail(mailOptions);
@@ -82,12 +110,15 @@ class EmailService {
       return true;
     } catch (error) {
       console.error('❌ Gagal kirim email:', error.message);
-      if (process.env.NODE_ENV !== 'production') {
-        console.log('⚠️ [DEV] Email gagal dikirim, tapi token sudah di-log di atas.');
-        console.log('⚠️ [DEV] Buka link di atas di browser untuk reset password.');
-        return false;
+
+      if (this.isProduction()) {
+        throw new Error('Gagal mengirim email reset password. Silakan coba lagi.');
       }
-      throw new Error('Gagal mengirim email reset password. Silakan coba lagi.');
+
+      // Dev mode: jangan gagalkan request, user bisa pakai link di log
+      console.log('⚠️ [DEV] Email gagal dikirim, tapi token sudah di-log di atas.');
+      console.log('⚠️ [DEV] Buka link di atas di browser untuk reset password.');
+      return false;
     }
   }
 
