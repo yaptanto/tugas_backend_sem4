@@ -251,7 +251,7 @@ const Login = () => {
               <div className="col-6 login-reset-link">
                 <div className="mb-3">
                   <div>
-                    <Link to="/reset">Forgot Password?</Link>
+                    <Link to="/reset">Reset Password?</Link>
                   </div>
                 </div>
               </div>

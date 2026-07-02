@@ -5,6 +5,7 @@ import '../styles/Reset.css';
 
 const Reset = () => {
   const [formData, setFormData] = useState({
+    emailOrUsername: '',
     oldPassword: '',
     newPassword: '',
     confirmPassword: ''
@@ -30,7 +31,7 @@ const Reset = () => {
     setSuccessMessage('');
     setIsLoading(true);
 
-    if (!formData.oldPassword.trim() || !formData.newPassword.trim() || !formData.confirmPassword.trim()) {
+    if (!formData.emailOrUsername.trim() || !formData.oldPassword.trim() || !formData.newPassword.trim() || !formData.confirmPassword.trim()) {
       setError('Semua field harus diisi');
       setIsLoading(false);
       return;
@@ -49,21 +50,13 @@ const Reset = () => {
     }
 
     try {
-      const token = sessionStorage.getItem('authToken');
-
-      if (!token) {
-        setError('Anda harus login terlebih dahulu');
-        setIsLoading(false);
-        return;
-      }
-
       const response = await fetch('/api/change-password', {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
+          emailOrUsername: formData.emailOrUsername,
           oldPassword: formData.oldPassword,
           newPassword: formData.newPassword,
           confirmPassword: formData.confirmPassword
@@ -79,7 +72,7 @@ const Reset = () => {
       }
 
       setSuccessMessage('Password berhasil diubah! Silakan login dengan password baru.');
-      setFormData({ oldPassword: '', newPassword: '', confirmPassword: '' });
+      setFormData({ emailOrUsername: '', oldPassword: '', newPassword: '', confirmPassword: '' });
 
       setTimeout(() => {
         navigate('/login');
@@ -112,6 +105,19 @@ const Reset = () => {
           )}
 
           <form onSubmit={handleSubmit}>
+            <div className="mb-3">
+              <label htmlFor="emailOrUsername" className="form-label">Email / Username</label>
+              <input
+                type="text"
+                className="form-control"
+                id="emailOrUsername"
+                placeholder="Masukkan email atau username"
+                value={formData.emailOrUsername}
+                onChange={handleChange}
+                disabled={isLoading}
+              />
+            </div>
+
             <div className="mb-3">
               <label htmlFor="oldPassword" className="form-label">Password Lama</label>
               <input

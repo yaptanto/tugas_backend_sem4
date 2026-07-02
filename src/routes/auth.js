@@ -1,6 +1,5 @@
 import express from 'express';
 import { validateRegister, validateLogin, validateChangePassword } from '../middleware/validate.js';
-import { authenticate } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -69,35 +68,33 @@ router.post('/login', validateLogin, async (req, res) => {
  * @openapi
  * /api/change-password:
  *   put:
- *     summary: Change password (authenticated)
+ *     summary: Change password with email/username and old password
  *     tags: [Auth]
- *     security:
- *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required: [oldPassword, newPassword, confirmPassword]
+ *             required: [emailOrUsername, oldPassword, newPassword, confirmPassword]
  *             properties:
+ *               emailOrUsername: { type: string }
  *               oldPassword: { type: string }
  *               newPassword: { type: string, minLength: 6 }
  *               confirmPassword: { type: string }
  *     responses:
  *       200: { description: Password changed successfully }
  *       400: { description: Validation error / wrong old password }
- *       401: { description: Unauthorized }
  */
-router.put('/change-password', authenticate, validateChangePassword, async (req, res) => {
+router.put('/change-password', validateChangePassword, async (req, res) => {
   try {
-    const { oldPassword, newPassword, confirmPassword } = req.body;
+    const { emailOrUsername, oldPassword, newPassword, confirmPassword } = req.body;
 
     if (newPassword !== confirmPassword) {
       return req.userService.errorResponse(res, "Konfirmasi password tidak cocok");
     }
 
-    await req.userService.changePassword(req.user.userId, oldPassword, newPassword);
+    await req.userService.changePassword(emailOrUsername, oldPassword, newPassword);
     res.json({ success: true, message: "Password berhasil diubah" });
   } catch (err) {
     req.userService.errorResponse(res, err.message);
