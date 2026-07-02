@@ -19,7 +19,7 @@ Aplikasi ini mengusung visual **Cyberpunk / Gamer Theme** modern dengan elemen d
 
 ### 👤 Manajemen User & Autentikasi
 - **Registrasi & Login**: Keamanan dengan enkripsi password (bcrypt) dan JWT token untuk autentikasi user session.
-- **Profile User**: Melihat dan memperbarui data profil (username, email, tanggal lahir, gender), upload avatar secara langsung (disimpan sebagai binary blob di database), serta reset password dengan verifikasi kecocokan.
+- **Profile User**: Melihat dan memperbarui data profil (username, email, tanggal lahir, gender), upload avatar secara langsung (disimpan sebagai binary blob di database), serta ganti password dengan verifikasi password lama.
 - **User Progression**: Sistem Leveling dan Points (Rast Coins) yang bertambah setiap kali melakukan transaksi top-up (cashback 1%).
 
 ### 🎮 Catalog Game & Top-Up
@@ -119,7 +119,7 @@ Setelah menjalankan backend server (`npx tsx index`), Anda dapat mengakses visua
 #### 🔓 Public Endpoints (Tanpa Login)
 - `POST /api/register` - Mendaftarkan user baru
 - `POST /api/login` - Login dengan JWT token response
-- `POST /api/reset-password` - Reset password user
+- `PUT /api/change-password` - Ganti password dengan email/username + password lama
 - `GET /api/games` - Mendapatkan catalog game aktif
 - `GET /api/promo-page` - Konfigurasi dan banner promo utama
 - `GET /api/promos` - Mengambil list promo aktif
